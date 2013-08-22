@@ -1,0 +1,41 @@
+2011-02-23 JCB
+
+Change the PLX default NAND partition sizes to the ones that CloudEngines
+used for the shipping PogoPlug v3.
+
+diff -Naurb a/drivers/mtd/nand/ox820_nand.c b/drivers/mtd/nand/ox820_nand.c
+--- a/drivers/mtd/nand/ox820_nand.c	2012-02-22 12:20:50.000000000 -0800
++++ b/drivers/mtd/nand/ox820_nand.c	2012-02-22 12:27:42.000000000 -0800
+@@ -56,12 +56,12 @@
+ static struct mtd_partition partition_info[] =
+ {
+ 	{
+-		.name = "Boot partition",
++		.name = "boot",
+ 		.offset = 0,
+-		.size = 1024 * 128 * 310 // first 308 128k blocks used for stage1. u-boot and kernel
++		.size = 1024 * 128 * 112 // first 112 128k blocks used for stage1. u-boot and kernel
+ 	},
+ 	{
+-		.name = "Data Partition",
++		.name = "rootfs",
+ 		.offset = MTDPART_OFS_NXTBLK,
+ 		.size = MTDPART_SIZ_FULL
+ 	}
+@@ -165,9 +165,13 @@
+ 		ox820_nand_read_data();
+ 	}
+ 	this->chip_delay = (ox820_nand_read_data() + 256 * ox820_nand_read_data()) / 1000;
+-#ifdef	CONFIG_MTD_DEBUG
+-	printk("Page read time %dms\n", this->chip_delay);
+-#endif
++        if(this->chip_delay < 20) {
++          // Weird, this chip didn't answer with a read time -- Assume 40ms
++          this->chip_delay = 40;
++          printk("NAND: Weird -- Unknown Page read time, defaulting to %dms\n", this->chip_delay);
++        } else {
++          printk("NAND: Page read time %dms\n", this->chip_delay);
++        }
+ 	if (nand_scan(priv.mtd, 1)) {
+ 		err = -ENXIO;
+ 		goto error;

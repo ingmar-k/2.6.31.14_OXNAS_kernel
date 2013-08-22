@@ -1,0 +1,37 @@
+2012-03-16 JCB
+
+Use the loading of the leds-gpio-ox820-pogoplug3 module a way to automatically stop the
+bootled blinking, and also use the led's default_trigger to turn it on without needed
+anything else in the startup scripts.
+
+diff -Naurb a/drivers/leds/leds-gpio-ox820-common.c b/drivers/leds/leds-gpio-ox820-common.c
+--- a/drivers/leds/leds-gpio-ox820-common.c	2012-03-15 11:59:28.000000000 -0700
++++ b/drivers/leds/leds-gpio-ox820-common.c	2012-03-15 12:56:50.000000000 -0700
+@@ -107,10 +107,14 @@
+ 	.dev.release = ox820_gpioleds_release
+ }; 
+ 
++#include <mach/bootled.h>
++
+ static int __init ox820_gpioleds_platform_init(void)
+ {
+ 	int ret, idx;
+ 
++	bootled_stop();
++
+ 	ret = platform_driver_register(&ox820_gpioleds_driver);
+ 	if(0 == ret) {
+ 		ret = platform_device_register(&ox820_gpioleds_dev);
+diff -Naurb a/drivers/leds/leds-gpio-ox820-pogoplug3.c b/drivers/leds/leds-gpio-ox820-pogoplug3.c
+--- a/drivers/leds/leds-gpio-ox820-pogoplug3.c	2012-03-16 04:48:57.000000000 -0700
++++ b/drivers/leds/leds-gpio-ox820-pogoplug3.c	2012-03-16 04:53:59.000000000 -0700
+@@ -36,7 +36,8 @@
+         {
+                 .led = {
+                         .name = "status:health:green",
+-                        .brightness_set = ox820_gpioleds_set
++                        .brightness_set = ox820_gpioleds_set,
++                        .default_trigger = "default-on"
+                 },
+                 .gpio = 49,
+                 .active_low = 255,

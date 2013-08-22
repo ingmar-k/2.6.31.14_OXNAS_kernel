@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<zyxel product="NGN firewall" model="trial" version="0.0.0.1">
+        <system>
+	</system>
+	<service>
+	</service>
+	<network>
+		<!-- device ha -->
+                <device-ha>
+                        <list name="_vrrps" type="vrrp_group_t"/>
+			<list name="_syncs" type="sync_t"/>
+			<list name="_wan_checks" type="wan_check_t"/>
+                </device-ha>
+	</network>
+	<object>
+	</object>
+	<policy>
+	</policy>
+</zyxel>

@@ -1,0 +1,18 @@
+--- drivers/mtd/nand/ox820_nand.c	2012-02-22 12:20:50.000000000 -0800
++++ drivers/mtd/nand/ox820_nand.c	2012-02-22 12:27:42.000000000 -0800
+@@ -56,12 +56,12 @@
+ static struct mtd_partition partition_info[] =
+ {
+ 	{
+-		.name = "Boot partition",
++		.name = "boot",
+ 		.offset = 0,
+-		.size = 1024 * 128 * 310 // first 308 128k blocks used for stage1. u-boot and kernel
++		.size = 1024 * 128 * 112 // first 112 128k blocks used for stage1. u-boot and kernel
+ 	},
+ 	{
+-		.name = "Data Partition",
++		.name = "rootfs",
+ 		.offset = MTDPART_OFS_NXTBLK,
+ 		.size = MTDPART_SIZ_FULL
+ 	}

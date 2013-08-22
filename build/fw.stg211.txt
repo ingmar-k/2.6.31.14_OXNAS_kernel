@@ -1,0 +1,13 @@
+HEADER_VERSION	value	1.00
+VERSION		value	0000
+REVISION	value	0000
+KERNEL		file	./uImage
+FS		file	./sysdisk.img.gz
+MODEL1		value	A803
+CORE_CHECKSUM	value	0000
+ZLD_CHECKSUM	value	0000
+ROM_CHECKSUM	value	0000
+INITRD_CHECKSUM	value	0000
+IMG_CHECKSUM	value	0000
+EXT_00		file	./pre-install.sh
+EXT_01		file	./post-install.sh

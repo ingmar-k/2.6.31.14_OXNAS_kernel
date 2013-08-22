@@ -1,0 +1,131 @@
+if ARCH_OX820
+
+menu "Oxford Semiconductor NAS Options"
+
+config ARCH_OXNAS_FPGA
+	bool "FPGA platform"
+	default n
+	help
+	  This enables support for Oxsemi NAS SoC FPGA development platform
+
+config RTL8211_SSC
+	bool "RTL8211 RXC Spread Spectrum Clock (SSC) for EMI reduction"
+	default n
+	help
+	  RTL8211D/E RXC Spread Spectrum Clock (SSC) for EMI reduction
+	  Write Reg 31=0x0007 (set to extension page)
+	  Write Reg 30=0x00A0 (extension page 160)
+	  Write Reg 26 bit 2=0 (enable RXC SSC)
+	  Write Reg 31=0x0000 (set to page 0)
+
+choice
+	prompt "OXNAS system type"
+	default OXNAS_VERSION_OX820
+
+config OXNAS_VERSION_OX815
+	bool "OX815"
+	help
+	  Support for the OX815 SoC
+
+config OXNAS_VERSION_OX820
+	bool "OX820"
+	help
+	  Support for the OX820 SoC
+
+config OXNAS_VERSION_OX825
+	bool "OX825"
+	help
+	  Support for the OX825 SoC
+endchoice
+
+choice
+	prompt "ZyXEL NAS Model"
+	depends on ARCH_OX820
+	default ZyXEL_STG100
+
+config ZyXEL_STG100
+	bool "STG-100"
+	---help---
+	Support for ZyXEL STG-100 board.
+
+config ZyXEL_STG211
+	bool "STG-211"
+	---help---
+	Support for ZyXEL STG-211 board.
+
+config ZyXEL_STG212
+	bool "STG-212"
+	---help---
+	Support for ZyXEL STG-212 board.
+
+endchoice
+
+choice
+	prompt "STG-100 Board Selection"
+	depends on ZyXEL_STG100
+	default ZyXEL_STG100R1
+
+config ZyXEL_STG100R1
+	bool "STG-100 Board R1"
+	---help---
+	Support for ZyXEL STG-100 board R1.
+	PLX NAS7820 + LCD panel
+
+config ZyXEL_STG100R2
+	bool "STG-100 Board R2"
+	---help---
+	Support for ZyXEL STG-100 board R2.
+	PLX NAS7715 + LED + rear USB port
+
+config ZyXEL_STG100R3
+	bool "STG-100 Board R3"
+	---help---
+	Support for ZyXEL STG-100 board R3.
+	PLX NAS7715 + LED + front USB port + rear USB port
+
+endchoice
+
+choice
+	prompt "STG-211 Board Selection"
+	depends on ZyXEL_STG211
+	default ZyXEL_STG211R1
+
+config ZyXEL_STG211R1
+	bool "STG-211 Board R1"
+	---help---
+	Support for ZyXEL STG-211 board R1.
+	PLX NAS7821
+
+config ZyXEL_STG211R2
+	bool "STG-211 Board R2"
+	---help---
+	Support for ZyXEL STG-211 board R2.
+	PLX NAS7821 + USB 3.0 port + SD card slot
+
+endchoice
+
+config FORCE_MAX_ZONEORDER
+	int "Max order of zoned buddy allocator"
+	default 11
+	help
+		The value to be assigned to MAX_ORDER
+
+config LEDS_TRIGGER_SATA_DISK
+	tristate "Front Panel SATA disk activity lamp"
+	default n
+	help
+		This module controls the SATA disk activity lamp.
+
+config OXNAS_PCIE_RESET_GPIO
+	int "The GPIO line used to reset the PCIe cards"
+	depends on PCI
+	default 44
+	help
+		This line is toggled during PCIe startup and
+		should be wired to the PCIe bus reset to ensure all cards
+		are reset prior to them being configured.
+
+
+endmenu
+
+endif

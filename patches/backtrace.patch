@@ -1,0 +1,26 @@
+diff --git a/arch/arm/lib/backtrace.S b/arch/arm/lib/backtrace.S
+index cd07b58..c9e1470 100644
+--- a/arch/arm/lib/backtrace.S
++++ b/arch/arm/lib/backtrace.S
+@@ -115,8 +115,9 @@ ENDPROC(c_backtrace)
+ #define instr r4
+ #define reg   r5
+ #define stack r6
++#define dummy r8			/* prevent misaligned stack */
+ 
+-.Ldumpstm:	stmfd	sp!, {instr, reg, stack, r7, lr}
++.Ldumpstm:	stmfd	sp!, {instr, reg, stack, r7, dummy, lr}
+ 		mov	stack, r0
+ 		mov	instr, r1
+ 		mov	reg, #10
+@@ -140,7 +141,7 @@ ENDPROC(c_backtrace)
+ 		teq	r7, #0
+ 		adrne	r0, .Lcr
+ 		blne	printk
+-		ldmfd	sp!, {instr, reg, stack, r7, pc}
++		ldmfd	sp!, {instr, reg, stack, r7, dummy, pc}
+ 
+ .Lfp:		.asciz	"%cr%d:%08x"
+ .Lcr:		.asciz	"\n"
+-- 
+1.7.7.6

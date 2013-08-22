@@ -1,0 +1,741 @@
+2012-02-26 JCB
+
+Extracted from the ALARM project's work on clean kernel 3.1 support for
+the ox820 CPU at https://github.com/WarheadsSE/OX820-3.1-Linux
+
+I've removed the GPIO_OX820_USE_IRQ Kconfig setting since it doesn't work
+on the old 2.6.31 kernel, but I've left the code in the gpio-ox820.c to
+make it easier to backport in any upstream changes later.
+
+diff -Naur a/arch/arm/Kconfig b/arch/arm/Kconfig
+--- a/arch/arm/Kconfig	2012-02-26 00:50:29.000000000 -0800
++++ b/arch/arm/Kconfig	2012-02-26 01:11:17.000000000 -0800
+@@ -646,6 +646,7 @@
+ 	bool "Oxford Semiconductor 815/820/825 NAS SoC"
+ 	select ARM_GIC
+ 	select GENERIC_CLOCKEVENTS
++	select ARCH_WANT_OPTIONAL_GPIOLIB
+ 	select LOCAL_TIMERS
+ 	help
+ 		This enables support for Oxsemi 815/820/825 NAS SoC
+diff -Naur a/arch/arm/mach-ox820/include/mach/gpio.h b/arch/arm/mach-ox820/include/mach/gpio.h
+--- a/arch/arm/mach-ox820/include/mach/gpio.h	1969-12-31 16:00:00.000000000 -0800
++++ b/arch/arm/mach-ox820/include/mach/gpio.h	2012-02-23 16:46:50.000000000 -0800
+@@ -0,0 +1,43 @@
++/*
++ * arch/arm/mach-0x820/include/mach/gpio.h
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++#ifndef _ox820_mach_gpio_h
++#define _ox820_mach_gpio_h
++
++#include <asm-generic/gpio.h>
++
++static inline void gpio_set_value(unsigned gpio, int value)
++{
++	__gpio_set_value(gpio, value);
++}
++
++/* Returns zero or nonzero; works for gpios configured as inputs OR
++ * as outputs, at least for built-in GPIOs.
++ */
++static inline int gpio_get_value(unsigned gpio)
++{
++	return __gpio_get_value(gpio);
++}
++
++static inline int gpio_cansleep(unsigned gpio)
++{
++	return __gpio_cansleep(gpio);
++}
++
++static inline int gpio_to_irq(unsigned gpio)
++{
++	return __gpio_to_irq(gpio);
++}
++
++static inline int irq_to_gpio(unsigned irq)
++{
++	/* don't support the reverse mapping */
++	return -ENOSYS;
++}
++
++#endif
+diff -Naur a/arch/arm/mach-ox820/include/mach/hardware.h b/arch/arm/mach-ox820/include/mach/hardware.h
+--- a/arch/arm/mach-ox820/include/mach/hardware.h	2012-02-05 16:06:44.000000000 -0800
++++ b/arch/arm/mach-ox820/include/mach/hardware.h	2012-02-23 16:46:50.000000000 -0800
+@@ -214,6 +214,70 @@
+ #define GPIO_A_FALLING_EDGE_DETECT            (GPIO_A_BASE + 0x0034)
+ #define GPIO_A_LEVEL_INTERRUPT_ENABLE         (GPIO_A_BASE + 0x0038)
+ #define GPIO_A_INTERRUPT_STATUS_REGISTER      (GPIO_A_BASE + 0x003C)
++#define GPIO_A_PWM_VALUE_0                    (GPIO_A_BASE + 0x0080)
++#define GPIO_A_RR_0                           (GPIO_A_BASE + 0x0084)
++#define GPIO_A_PWM_VALUE_1                    (GPIO_A_BASE + 0x0088)
++#define GPIO_A_RR_1                           (GPIO_A_BASE + 0x008C)
++#define GPIO_A_PWM_VALUE_2                    (GPIO_A_BASE + 0x0090)
++#define GPIO_A_RR_2                           (GPIO_A_BASE + 0x0094)
++#define GPIO_A_PWM_VALUE_3                    (GPIO_A_BASE + 0x0098)
++#define GPIO_A_RR_3                           (GPIO_A_BASE + 0x009C)
++#define GPIO_A_PWM_VALUE_4                    (GPIO_A_BASE + 0x00A0)
++#define GPIO_A_RR_4                           (GPIO_A_BASE + 0x00A4)
++#define GPIO_A_PWM_VALUE_5                    (GPIO_A_BASE + 0x00A8)
++#define GPIO_A_RR_5                           (GPIO_A_BASE + 0x00AC)
++#define GPIO_A_PWM_VALUE_6                    (GPIO_A_BASE + 0x00B0)
++#define GPIO_A_RR_6                           (GPIO_A_BASE + 0x00B4)
++#define GPIO_A_PWM_VALUE_7                    (GPIO_A_BASE + 0x00B8)
++#define GPIO_A_RR_7                           (GPIO_A_BASE + 0x00BC)
++#define GPIO_A_PWM_VALUE_8                    (GPIO_A_BASE + 0x00C0)
++#define GPIO_A_RR_8                           (GPIO_A_BASE + 0x00C4)
++#define GPIO_A_PWM_VALUE_9                    (GPIO_A_BASE + 0x00C8)
++#define GPIO_A_RR_9                           (GPIO_A_BASE + 0x00CC)
++#define GPIO_A_PWM_VALUE_10                   (GPIO_A_BASE + 0x00D0)
++#define GPIO_A_RR_10                          (GPIO_A_BASE + 0x00D4)
++#define GPIO_A_PWM_VALUE_11                   (GPIO_A_BASE + 0x00D8)
++#define GPIO_A_RR_11                          (GPIO_A_BASE + 0x00DC)
++#define GPIO_A_PWM_VALUE_12                   (GPIO_A_BASE + 0x00E0)
++#define GPIO_A_RR_12                          (GPIO_A_BASE + 0x00E4)
++#define GPIO_A_PWM_VALUE_13                   (GPIO_A_BASE + 0x00E8)
++#define GPIO_A_RR_13                          (GPIO_A_BASE + 0x00EC)
++#define GPIO_A_PWM_VALUE_14                   (GPIO_A_BASE + 0x00F0)
++#define GPIO_A_RR_14                          (GPIO_A_BASE + 0x00F4)
++#define GPIO_A_PWM_VALUE_15                   (GPIO_A_BASE + 0x00F8)
++#define GPIO_A_RR_15                          (GPIO_A_BASE + 0x00FC)
++#define GPIO_A_PWM_VALUE_16                   (GPIO_A_BASE + 0x0100)
++#define GPIO_A_RR_16                          (GPIO_A_BASE + 0x0104)
++#define GPIO_A_PWM_VALUE_17                   (GPIO_A_BASE + 0x0108)
++#define GPIO_A_RR_17                          (GPIO_A_BASE + 0x010C)
++#define GPIO_A_PWM_VALUE_18                   (GPIO_A_BASE + 0x0110)
++#define GPIO_A_RR_18                          (GPIO_A_BASE + 0x0114)
++#define GPIO_A_PWM_VALUE_19                   (GPIO_A_BASE + 0x0118)
++#define GPIO_A_RR_19                          (GPIO_A_BASE + 0x011C)
++#define GPIO_A_PWM_VALUE_20                   (GPIO_A_BASE + 0x0120)
++#define GPIO_A_RR_20                          (GPIO_A_BASE + 0x0124)
++#define GPIO_A_PWM_VALUE_21                   (GPIO_A_BASE + 0x0128)
++#define GPIO_A_RR_21                          (GPIO_A_BASE + 0x012C)
++#define GPIO_A_PWM_VALUE_22                   (GPIO_A_BASE + 0x0130)
++#define GPIO_A_RR_22                          (GPIO_A_BASE + 0x0134)
++#define GPIO_A_PWM_VALUE_23                   (GPIO_A_BASE + 0x0138)
++#define GPIO_A_RR_23                          (GPIO_A_BASE + 0x013C)
++#define GPIO_A_PWM_VALUE_24                   (GPIO_A_BASE + 0x0140)
++#define GPIO_A_RR_24                          (GPIO_A_BASE + 0x0144)
++#define GPIO_A_PWM_VALUE_25                   (GPIO_A_BASE + 0x0148)
++#define GPIO_A_RR_25                          (GPIO_A_BASE + 0x014C)
++#define GPIO_A_PWM_VALUE_26                   (GPIO_A_BASE + 0x0150)
++#define GPIO_A_RR_26                          (GPIO_A_BASE + 0x0154)
++#define GPIO_A_PWM_VALUE_27                   (GPIO_A_BASE + 0x0158)
++#define GPIO_A_RR_27                          (GPIO_A_BASE + 0x015C)
++#define GPIO_A_PWM_VALUE_28                   (GPIO_A_BASE + 0x0160)
++#define GPIO_A_RR_28                          (GPIO_A_BASE + 0x0164)
++#define GPIO_A_PWM_VALUE_29                   (GPIO_A_BASE + 0x0168)
++#define GPIO_A_RR_29                          (GPIO_A_BASE + 0x016C)
++#define GPIO_A_PWM_VALUE_30                   (GPIO_A_BASE + 0x0160)
++#define GPIO_A_RR_30                          (GPIO_A_BASE + 0x0164)
++#define GPIO_A_PWM_VALUE_31                   (GPIO_A_BASE + 0x0168)
++#define GPIO_A_RR_31                          (GPIO_A_BASE + 0x016C)
+ 
+ /* GPIO B registers */
+ #define GPIO_B_DATA                            GPIO_B_BASE
+@@ -232,6 +296,70 @@
+ #define GPIO_B_FALLING_EDGE_DETECT            (GPIO_B_BASE + 0x0034)
+ #define GPIO_B_LEVEL_INTERRUPT_ENABLE         (GPIO_B_BASE + 0x0038)
+ #define GPIO_B_INTERRUPT_STATUS_REGISTER      (GPIO_B_BASE + 0x003C)
++#define GPIO_B_PWM_VALUE_0                    (GPIO_B_BASE + 0x0080)
++#define GPIO_B_RR_0                           (GPIO_B_BASE + 0x0084)
++#define GPIO_B_PWM_VALUE_1                    (GPIO_B_BASE + 0x0088)
++#define GPIO_B_RR_1                           (GPIO_B_BASE + 0x008C)
++#define GPIO_B_PWM_VALUE_2                    (GPIO_B_BASE + 0x0090)
++#define GPIO_B_RR_2                           (GPIO_B_BASE + 0x0094)
++#define GPIO_B_PWM_VALUE_3                    (GPIO_B_BASE + 0x0098)
++#define GPIO_B_RR_3                           (GPIO_B_BASE + 0x009C)
++#define GPIO_B_PWM_VALUE_4                    (GPIO_B_BASE + 0x00A0)
++#define GPIO_B_RR_4                           (GPIO_B_BASE + 0x00A4)
++#define GPIO_B_PWM_VALUE_5                    (GPIO_B_BASE + 0x00A8)
++#define GPIO_B_RR_5                           (GPIO_B_BASE + 0x00AC)
++#define GPIO_B_PWM_VALUE_6                    (GPIO_B_BASE + 0x00B0)
++#define GPIO_B_RR_6                           (GPIO_B_BASE + 0x00B4)
++#define GPIO_B_PWM_VALUE_7                    (GPIO_B_BASE + 0x00B8)
++#define GPIO_B_RR_7                           (GPIO_B_BASE + 0x00BC)
++#define GPIO_B_PWM_VALUE_8                    (GPIO_B_BASE + 0x00C0)
++#define GPIO_B_RR_8                           (GPIO_B_BASE + 0x00C4)
++#define GPIO_B_PWM_VALUE_9                    (GPIO_B_BASE + 0x00C8)
++#define GPIO_B_RR_9                           (GPIO_B_BASE + 0x00CC)
++#define GPIO_B_PWM_VALUE_10                   (GPIO_B_BASE + 0x00D0)
++#define GPIO_B_RR_10                          (GPIO_B_BASE + 0x00D4)
++#define GPIO_B_PWM_VALUE_11                   (GPIO_B_BASE + 0x00D8)
++#define GPIO_B_RR_11                          (GPIO_B_BASE + 0x00DC)
++#define GPIO_B_PWM_VALUE_12                   (GPIO_B_BASE + 0x00E0)
++#define GPIO_B_RR_12                          (GPIO_B_BASE + 0x00E4)
++#define GPIO_B_PWM_VALUE_13                   (GPIO_B_BASE + 0x00E8)
++#define GPIO_B_RR_13                          (GPIO_B_BASE + 0x00EC)
++#define GPIO_B_PWM_VALUE_14                   (GPIO_B_BASE + 0x00F0)
++#define GPIO_B_RR_14                          (GPIO_B_BASE + 0x00F4)
++#define GPIO_B_PWM_VALUE_15                   (GPIO_B_BASE + 0x00F8)
++#define GPIO_B_RR_15                          (GPIO_B_BASE + 0x00FC)
++#define GPIO_B_PWM_VALUE_16                   (GPIO_B_BASE + 0x0100)
++#define GPIO_B_RR_16                          (GPIO_B_BASE + 0x0104)
++#define GPIO_B_PWM_VALUE_17                   (GPIO_B_BASE + 0x0108)
++#define GPIO_B_RR_17                          (GPIO_B_BASE + 0x010C)
++#define GPIO_B_PWM_VALUE_18                   (GPIO_B_BASE + 0x0110)
++#define GPIO_B_RR_18                          (GPIO_B_BASE + 0x0114)
++#define GPIO_B_PWM_VALUE_19                   (GPIO_B_BASE + 0x0118)
++#define GPIO_B_RR_19                          (GPIO_B_BASE + 0x011C)
++#define GPIO_B_PWM_VALUE_20                   (GPIO_B_BASE + 0x0120)
++#define GPIO_B_RR_20                          (GPIO_B_BASE + 0x0124)
++#define GPIO_B_PWM_VALUE_21                   (GPIO_B_BASE + 0x0128)
++#define GPIO_B_RR_21                          (GPIO_B_BASE + 0x012C)
++#define GPIO_B_PWM_VALUE_22                   (GPIO_B_BASE + 0x0130)
++#define GPIO_B_RR_22                          (GPIO_B_BASE + 0x0134)
++#define GPIO_B_PWM_VALUE_23                   (GPIO_B_BASE + 0x0138)
++#define GPIO_B_RR_23                          (GPIO_B_BASE + 0x013C)
++#define GPIO_B_PWM_VALUE_24                   (GPIO_B_BASE + 0x0140)
++#define GPIO_B_RR_24                          (GPIO_B_BASE + 0x0144)
++#define GPIO_B_PWM_VALUE_25                   (GPIO_B_BASE + 0x0148)
++#define GPIO_B_RR_25                          (GPIO_B_BASE + 0x014C)
++#define GPIO_B_PWM_VALUE_26                   (GPIO_B_BASE + 0x0150)
++#define GPIO_B_RR_26                          (GPIO_B_BASE + 0x0154)
++#define GPIO_B_PWM_VALUE_27                   (GPIO_B_BASE + 0x0158)
++#define GPIO_B_RR_27                          (GPIO_B_BASE + 0x015C)
++#define GPIO_B_PWM_VALUE_28                   (GPIO_B_BASE + 0x0160)
++#define GPIO_B_RR_28                          (GPIO_B_BASE + 0x0164)
++#define GPIO_B_PWM_VALUE_29                   (GPIO_B_BASE + 0x0168)
++#define GPIO_B_RR_29                          (GPIO_B_BASE + 0x016C)
++#define GPIO_B_PWM_VALUE_30                   (GPIO_B_BASE + 0x0160)
++#define GPIO_B_RR_30                          (GPIO_B_BASE + 0x0164)
++#define GPIO_B_PWM_VALUE_31                   (GPIO_B_BASE + 0x0168)
++#define GPIO_B_RR_31                          (GPIO_B_BASE + 0x016C)
+ 
+ /* UART_A multi function pins */
+ #define UART_A_RI_GPIOA_PIN		24
+diff -Naur a/drivers/gpio/Kconfig b/drivers/gpio/Kconfig
+--- a/drivers/gpio/Kconfig	2010-07-05 10:11:43.000000000 -0700
++++ b/drivers/gpio/Kconfig	2012-02-26 00:27:23.000000000 -0800
+@@ -67,6 +67,12 @@
+ 
+ comment "Memory mapped GPIO expanders:"
+ 
++config GPIO_OX820
++	tristate "OX820 GPIOs"
++	depends on ARCH_OX820
++	help
++	  Say yes here to access the GPIO signals of OX820
++
+ config GPIO_PL061
+ 	bool "PrimeCell PL061 GPIO support"
+ 	depends on ARM_AMBA
+diff -Naur a/drivers/gpio/Makefile b/drivers/gpio/Makefile
+--- a/drivers/gpio/Makefile	2010-07-05 10:11:43.000000000 -0700
++++ b/drivers/gpio/Makefile	2012-02-26 00:29:50.000000000 -0800
+@@ -14,3 +14,4 @@
+ obj-$(CONFIG_GPIO_XILINX)	+= xilinx_gpio.o
+ obj-$(CONFIG_GPIO_BT8XX)	+= bt8xxgpio.o
+ obj-$(CONFIG_GPIO_VR41XX)	+= vr41xx_giu.o
++obj-$(CONFIG_GPIO_OX820)	+= gpio-ox820.o
+diff -Naur a/drivers/gpio/gpio-ox820.c b/drivers/gpio/gpio-ox820.c
+--- a/drivers/gpio/gpio-ox820.c	1969-12-31 16:00:00.000000000 -0800
++++ b/drivers/gpio/gpio-ox820.c	2012-02-26 00:01:45.000000000 -0800
+@@ -0,0 +1,501 @@
++/*
++ * OX820 chip GPIO driver
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License
++ * along with this program; if not, write to the Free Software
++ * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
++ */
++
++/* Supports:
++ * OX820
++ */
++
++#include <linux/module.h>
++#include <linux/pci.h>
++#include <linux/platform_device.h>
++#include <linux/kernel.h>
++#include <linux/delay.h>
++#include <linux/stddef.h>
++#include <linux/interrupt.h>
++#include <linux/init.h>
++#include <linux/irq.h>
++#include <linux/io.h>
++#include <linux/spinlock.h>
++#include <linux/gpio.h>
++#include <linux/slab.h>
++/* #include <linux/pm_runtime.h> */
++#include <mach/hardware.h>
++#include <mach/irqs.h>
++#include <asm/hw_irq.h>
++
++extern spinlock_t oxnas_gpio_spinlock;
++
++#if 0
++#define ox820_printk(x...) printk(x)
++#else
++#define ox820_printk(x...) {}
++#endif
++
++#ifdef CONFIG_GPIO_OX820_USE_IRQ
++int ox820_gpioa_irq_base = OX820_GPIO_IRQ_START;
++int ox820_gpiob_irq_base = OX820_GPIO_IRQ_START + 32;
++
++static irqreturn_t ox820_gpioa_irq_handler(int irq, void* dev_id)
++{
++	unsigned irqidx;
++	unsigned long irq_event = readl(GPIO_A_INTERRUPT_EVENT);
++	writel(irq_event, GPIO_A_INTERRUPT_EVENT);
++	for(irqidx = 0; irqidx < 32; ++irqidx) {
++		if(irq_event & (1UL << irqidx)) {
++			generic_handle_irq(ox820_gpioa_irq_base + irqidx);
++		}
++	}
++	
++	return IRQ_HANDLED;
++}
++
++static void ox820_gpioa_irq_mask(struct irq_data* d)
++{
++	unsigned long flags;
++	int irqno = d->irq - ox820_gpioa_irq_base;
++	spin_lock_irqsave(&oxnas_gpio_spinlock, flags);
++	
++	writel(readl(GPIO_A_INTERRUPT_ENABLE) & ~(1UL << (irqno)), GPIO_A_INTERRUPT_ENABLE);
++	writel(1UL << (d->irq), GPIO_A_INTERRUPT_EVENT);
++	
++	spin_unlock_irqrestore(&oxnas_gpio_spinlock, flags);
++}
++
++static void ox820_gpioa_irq_unmask(struct irq_data* d)
++{
++	unsigned long flags;
++	int irqno = d->irq - ox820_gpioa_irq_base;
++	spin_lock_irqsave(&oxnas_gpio_spinlock, flags);
++	
++	writel(readl(GPIO_A_INTERRUPT_ENABLE) | (1UL << (irqno)), GPIO_A_INTERRUPT_ENABLE);
++	
++	spin_unlock_irqrestore(&oxnas_gpio_spinlock, flags);
++}
++
++static int ox820_gpioa_irq_set_type(struct irq_data* d, unsigned int type)
++{
++	unsigned long flags;
++	int irqno = d->irq - ox820_gpioa_irq_base;
++	if((type & IRQ_TYPE_EDGE_BOTH) && (type & IRQ_TYPE_LEVEL_MASK)) {
++		printk("ox820_gpio: gpioa irq %d: unsupported type %d\n",
++				d->irq, type);
++		return -EINVAL;
++	}
++
++	spin_lock_irqsave(&oxnas_gpio_spinlock, flags);
++	
++	if((IRQ_TYPE_EDGE_RISING & type) || (IRQ_TYPE_LEVEL_HIGH & type)) {
++		writel(readl(GPIO_A_RISING_EDGE_ACTIVE_HIGH_ENABLE) | (1UL << (irqno)), GPIO_A_RISING_EDGE_ACTIVE_HIGH_ENABLE);
++	} else {
++		writel(readl(GPIO_A_RISING_EDGE_ACTIVE_HIGH_ENABLE) & ~(1UL << (irqno)), GPIO_A_RISING_EDGE_ACTIVE_HIGH_ENABLE);
++	}
++	
++	if((IRQ_TYPE_EDGE_FALLING & type) || (IRQ_TYPE_LEVEL_LOW & type)) {
++		writel(readl(GPIO_A_FALLING_EDGE_ACTIVE_LOW_ENABLE) | (1UL << (irqno)), GPIO_A_RISING_EDGE_ACTIVE_HIGH_ENABLE);
++	} else {
++		writel(readl(GPIO_A_FALLING_EDGE_ACTIVE_LOW_ENABLE) & ~(1UL << (irqno)), GPIO_A_RISING_EDGE_ACTIVE_HIGH_ENABLE);
++	}
++	
++	if(IRQ_TYPE_LEVEL_MASK & type) {
++		writel(readl(GPIO_A_LEVEL_INTERRUPT_ENABLE) | (1UL << (irqno)), GPIO_A_LEVEL_INTERRUPT_ENABLE);
++	} else {
++		writel(readl(GPIO_A_LEVEL_INTERRUPT_ENABLE) & ~(1UL << (irqno)), GPIO_A_LEVEL_INTERRUPT_ENABLE);
++	}
++		
++	spin_unlock_irqrestore(&oxnas_gpio_spinlock, flags);
++	
++	return 0;
++}
++
++static struct irq_chip gpio_a_irq_chip = {
++	.name = "gpioa_irq",
++	.irq_mask = ox820_gpioa_irq_mask,
++	.irq_unmask = ox820_gpioa_irq_unmask,
++	.irq_set_type = ox820_gpioa_irq_set_type
++};
++
++static irqreturn_t ox820_gpiob_irq_handler(int irq, void* dev_id)
++{
++	unsigned irqidx;
++	unsigned long irq_event = readl(GPIO_B_INTERRUPT_EVENT);
++	writel(irq_event, GPIO_B_INTERRUPT_EVENT);
++	for(irqidx = 0; irqidx < 32; ++irqidx) {
++		if(irq_event & (1UL << irqidx)) {
++			generic_handle_irq(ox820_gpiob_irq_base + irqidx);
++		}
++	}
++	
++	return IRQ_HANDLED;
++}
++
++static void ox820_gpiob_irq_mask(struct irq_data* d)
++{
++	unsigned long flags;
++	int irqno = d->irq - ox820_gpiob_irq_base;
++	spin_lock_irqsave(&oxnas_gpio_spinlock, flags);
++	
++	writel(readl(GPIO_B_INTERRUPT_ENABLE) & ~(1UL << (irqno)), GPIO_B_INTERRUPT_ENABLE);
++	writel(1UL << (irqno), GPIO_A_INTERRUPT_EVENT);
++	
++	spin_unlock_irqrestore(&oxnas_gpio_spinlock, flags);
++}
++
++static void ox820_gpiob_irq_unmask(struct irq_data* d)
++{
++	unsigned long flags;
++	int irqno = d->irq - ox820_gpiob_irq_base;
++	spin_lock_irqsave(&oxnas_gpio_spinlock, flags);
++	
++	writel(readl(GPIO_B_INTERRUPT_ENABLE) | (1UL << (irqno)), GPIO_B_INTERRUPT_ENABLE);
++	
++	spin_unlock_irqrestore(&oxnas_gpio_spinlock, flags);
++}
++
++static int ox820_gpiob_irq_set_type(struct irq_data* d, unsigned int type)
++{
++	unsigned long flags;
++	int irqno = d->irq - ox820_gpiob_irq_base;
++	if((type & IRQ_TYPE_EDGE_BOTH) && (type & IRQ_TYPE_LEVEL_MASK)) {
++		printk("ox820_gpio: gpiob irq %d: unsupported type %d\n",
++				d->irq, type);
++		return -EINVAL;
++	}
++
++	spin_lock_irqsave(&oxnas_gpio_spinlock, flags);
++	
++	if((IRQ_TYPE_EDGE_RISING & type) || (IRQ_TYPE_LEVEL_HIGH & type)) {
++		writel(readl(GPIO_B_RISING_EDGE_ACTIVE_HIGH_ENABLE) | (1 << (irqno)), GPIO_B_RISING_EDGE_ACTIVE_HIGH_ENABLE);
++	} else {
++		writel(readl(GPIO_B_RISING_EDGE_ACTIVE_HIGH_ENABLE) & ~(1 << (irqno)), GPIO_B_RISING_EDGE_ACTIVE_HIGH_ENABLE);
++	}
++	
++	if((IRQ_TYPE_EDGE_FALLING & type) || (IRQ_TYPE_LEVEL_LOW & type)) {
++		writel(readl(GPIO_B_FALLING_EDGE_ACTIVE_LOW_ENABLE) | (1 << (irqno)), GPIO_B_RISING_EDGE_ACTIVE_HIGH_ENABLE);
++	} else {
++		writel(readl(GPIO_B_FALLING_EDGE_ACTIVE_LOW_ENABLE) & ~(1 << (irqno)), GPIO_B_RISING_EDGE_ACTIVE_HIGH_ENABLE);
++	}
++	
++	if(IRQ_TYPE_LEVEL_MASK & type) {
++		writel(readl(GPIO_B_LEVEL_INTERRUPT_ENABLE) | (1 << (irqno)), GPIO_B_LEVEL_INTERRUPT_ENABLE);
++	} else {
++		writel(readl(GPIO_B_LEVEL_INTERRUPT_ENABLE) & ~(1 << (irqno)), GPIO_B_LEVEL_INTERRUPT_ENABLE);
++	}
++		
++	spin_unlock_irqrestore(&oxnas_gpio_spinlock, flags);
++	
++	return 0;
++}
++
++static struct irq_chip gpio_b_irq_chip = {
++	.name = "gpiob_irq",
++	.irq_mask = ox820_gpiob_irq_mask,
++	.irq_unmask = ox820_gpiob_irq_unmask,
++	.irq_set_type = ox820_gpiob_irq_set_type
++};
++#endif
++
++static inline void ox820_switch_to_gpio(unsigned nr)
++{
++	unsigned long flags;
++	unsigned long gpio_mask;
++
++	spin_lock_irqsave(&oxnas_gpio_spinlock, flags);
++	
++	if(nr < SYS_CTRL_NUM_PINS)
++	{
++		gpio_mask = 1 << nr;
++		writel(readl(SYS_CTRL_SECONDARY_SEL)   & ~(gpio_mask), SYS_CTRL_SECONDARY_SEL);
++		writel(readl(SYS_CTRL_TERTIARY_SEL)    & ~(gpio_mask), SYS_CTRL_TERTIARY_SEL);
++		writel(readl(SYS_CTRL_QUATERNARY_SEL)  & ~(gpio_mask), SYS_CTRL_QUATERNARY_SEL);
++		writel(readl(SYS_CTRL_DEBUG_SEL)       & ~(gpio_mask), SYS_CTRL_DEBUG_SEL);
++		writel(readl(SYS_CTRL_ALTERNATIVE_SEL) & ~(gpio_mask), SYS_CTRL_ALTERNATIVE_SEL);
++	} else {
++		gpio_mask = 1 << (nr - SYS_CTRL_NUM_PINS);
++		writel(readl(SEC_CTRL_SECONDARY_SEL)   & ~(gpio_mask), SEC_CTRL_SECONDARY_SEL);
++		writel(readl(SEC_CTRL_TERTIARY_SEL)    & ~(gpio_mask), SEC_CTRL_TERTIARY_SEL);
++		writel(readl(SEC_CTRL_QUATERNARY_SEL)  & ~(gpio_mask), SEC_CTRL_QUATERNARY_SEL);
++		writel(readl(SEC_CTRL_DEBUG_SEL)       & ~(gpio_mask), SEC_CTRL_DEBUG_SEL);
++		writel(readl(SEC_CTRL_ALTERNATIVE_SEL) & ~(gpio_mask), SEC_CTRL_ALTERNATIVE_SEL);
++	}
++	
++	spin_unlock_irqrestore(&oxnas_gpio_spinlock, flags);
++}
++
++static int ox820_gpio_direction_input(struct gpio_chip* gpio, unsigned nr)
++{
++	if(nr >= 50) {
++		return -EINVAL;
++	}
++	
++	ox820_printk(KERN_INFO"ox820_gpio.c: switch to input %u\n", nr);
++	ox820_switch_to_gpio(nr);
++
++	if(nr < SYS_CTRL_NUM_PINS)
++	{
++		writel(1 << (nr & 31), GPIO_A_OUTPUT_ENABLE_CLEAR);
++	}
++	else
++	{
++		nr -= SYS_CTRL_NUM_PINS;
++		writel(1 << (nr & 31), GPIO_B_OUTPUT_ENABLE_CLEAR);
++	}
++	
++	return 0;
++}
++
++static int ox820_gpio_get(struct gpio_chip* gpio, unsigned nr)
++{
++	if(nr >= 50) {
++		return 0;
++	}
++	
++	ox820_printk(KERN_INFO"ox820_gpio.c: read input %u\n", nr);
++	if(nr < SYS_CTRL_NUM_PINS) {
++		return !!(readl(GPIO_A_DATA) & (1 << nr));
++	} else {
++		return !!(readl(GPIO_B_DATA) & (1 << (nr - SYS_CTRL_NUM_PINS)));
++	}
++}
++
++static int ox820_gpio_set_debounce(struct gpio_chip* chip,
++					unsigned nr,
++					unsigned debounce)
++{
++	unsigned long flags;
++	if(nr >= 50) {
++		return -EINVAL;
++	}
++	
++	ox820_printk(KERN_INFO"ox820_gpio.c: set debounce mode for %u = %u\n", nr, debounce);
++	ox820_switch_to_gpio(nr);
++	
++	spin_lock_irqsave(&oxnas_gpio_spinlock, flags);
++	if(nr < SYS_CTRL_NUM_PINS) {
++		writel(readl(GPIO_A_INPUT_DEBOUNCE_ENABLE) | (1 << (nr & 31)), GPIO_A_INPUT_DEBOUNCE_ENABLE);
++	} else {
++		nr -= SYS_CTRL_NUM_PINS;
++		writel(readl(GPIO_B_INPUT_DEBOUNCE_ENABLE) | (1 << (nr & 31)), GPIO_B_INPUT_DEBOUNCE_ENABLE);
++	}
++	spin_unlock_irqrestore(&oxnas_gpio_spinlock, flags);
++	
++	return 0;
++}
++
++static int ox820_gpio_direction_output(struct gpio_chip* gpio,
++					unsigned nr,
++					int val)
++{
++	if(nr >= 50) {
++		return -EINVAL;
++	}
++	
++	ox820_printk(KERN_INFO"ox820_gpio.c: switch to output %u\n", nr);
++	ox820_switch_to_gpio(nr);
++	
++	if(nr < SYS_CTRL_NUM_PINS) {
++		writel(1 << (nr & 31), GPIO_A_OUTPUT_ENABLE_SET);
++	} else {
++		nr -= SYS_CTRL_NUM_PINS;
++		writel(1 << (nr & 31), GPIO_B_OUTPUT_ENABLE_SET);
++	}
++	if(val) {
++		if(nr < SYS_CTRL_NUM_PINS) {
++			writel(1 << (nr & 31), GPIO_A_OUTPUT_SET);
++		} else {
++			nr -= SYS_CTRL_NUM_PINS;
++			writel(1 << (nr & 31), GPIO_B_OUTPUT_SET);
++		}
++	} else {
++		if(nr < SYS_CTRL_NUM_PINS) {
++			writel(1 << (nr & 31), GPIO_A_OUTPUT_CLEAR);
++		} else {
++			nr -= SYS_CTRL_NUM_PINS;
++			writel(1 << (nr & 31), GPIO_B_OUTPUT_CLEAR);
++		}
++	}
++	
++	return 0;
++}
++
++static void ox820_gpio_set(struct gpio_chip* gpio,
++				unsigned nr,
++				int val)
++{
++	if(nr >= 50) {
++		return;
++	}
++
++	ox820_printk(KERN_INFO"ox820_gpio.c: set output %u to %u\n", nr, val);
++	if(val) {
++		if(nr < SYS_CTRL_NUM_PINS) {
++			writel(1 << (nr & 31), GPIO_A_OUTPUT_SET);
++		} else {
++			nr -= SYS_CTRL_NUM_PINS;
++			writel(1 << (nr & 31), GPIO_B_OUTPUT_SET);
++		}
++	} else {
++		if(nr < SYS_CTRL_NUM_PINS) {
++			writel(1 << (nr & 31), GPIO_A_OUTPUT_CLEAR);
++		} else {
++			nr -= SYS_CTRL_NUM_PINS;
++			writel(1 << (nr & 31), GPIO_B_OUTPUT_CLEAR);
++		}
++	}
++}
++
++#ifdef CONFIG_GPIO_OX820_USE_IRQ
++static int ox820_gpio_to_irq(struct gpio_chip* gpio, unsigned nr) {
++	if(nr >= 50) {
++		return -EINVAL;
++	}
++	if(nr < SYS_CTRL_NUM_PINS) {
++		return ox820_gpioa_irq_base + nr;
++	} else {
++		return ox820_gpiob_irq_base + nr - SYS_CTRL_NUM_PINS;
++	}
++}
++#endif
++
++static struct gpio_chip ox820_gpio = {
++	.label = "ox820_gpio",
++	.dev = NULL,
++	.owner = NULL,
++	.direction_input = ox820_gpio_direction_input,
++	.get = ox820_gpio_get,
++	.direction_output = ox820_gpio_direction_output,
++/*	.set_debounce = ox820_gpio_set_debounce, */
++	.set = ox820_gpio_set,
++#ifdef CONFIG_GPIO_OX820_USE_IRQ
++	.to_irq = ox820_gpio_to_irq,
++#endif
++	.base = 0,
++	.ngpio = 50,
++};
++
++static int __devinit ox820_gpio_probe(struct platform_device* pdev)
++{
++	int ret = 0;
++	
++	return ret;
++}
++
++static int __devexit ox820_gpio_remove(struct platform_device* pdev)
++{
++	int ret = 0;
++	return ret;
++}
++
++static struct platform_driver ox820_gpio_driver = {
++	.driver = {
++		.name = "ox820-gpio",
++	},
++	.probe = ox820_gpio_probe,
++	.remove = ox820_gpio_remove
++};
++
++static int __init ox820_gpio_platform_init(void)
++{
++	int ret;
++#ifdef CONFIG_GPIO_OX820_USE_IRQ
++	int j;
++#endif
++
++	ret = platform_driver_register(&ox820_gpio_driver);
++	if(0 != ret) {
++		goto clean0;
++	}
++	/* disable interrupts for now */
++	writel(0, GPIO_A_INTERRUPT_ENABLE);
++	writel(0, GPIO_B_INTERRUPT_ENABLE);
++	
++#ifdef CONFIG_GPIO_OX820_USE_IRQ
++	ret = request_irq(GPIOA_INTERRUPT, ox820_gpioa_irq_handler, IRQF_SHARED, "ox820-gpioa", &gpio_a_irq_chip);
++	if(0 != ret) {
++		goto clean1;
++	}
++	ret = request_irq(GPIOB_INTERRUPT, ox820_gpiob_irq_handler, IRQF_SHARED, "ox820-gpiob", &gpio_b_irq_chip);
++	if(0 != ret) {
++		goto clean2;
++	}
++#endif
++	ret = gpiochip_add(&ox820_gpio);
++	if(0 != ret) {
++		goto clean3;
++	}
++#ifdef CONFIG_GPIO_OX820_USE_IRQ
++	for(j = ox820_gpioa_irq_base; j < ox820_gpioa_irq_base + 32; ++j) {
++		irq_set_chip(j, &gpio_a_irq_chip);
++		irq_set_handler(j, handle_simple_irq);
++		irq_modify_status(j, IRQ_NOREQUEST, 0);
++	}
++	for(j = ox820_gpiob_irq_base; j < ox820_gpiob_irq_base + 18; ++j) {
++		irq_set_chip(j, &gpio_b_irq_chip);
++		irq_set_handler(j, handle_simple_irq);
++		irq_modify_status(j, IRQ_NOREQUEST, 0);
++	}
++#endif			
++	printk(KERN_INFO"ox820_gpio: initialized\n");
++	
++	return 0;
++	
++clean3:
++#ifdef CONFIG_GPIO_OX820_USE_IRQ
++	free_irq(GPIOB_INTERRUPT, &gpio_b_irq_chip);
++clean2:
++	free_irq(GPIOA_INTERRUPT, &gpio_a_irq_chip);
++clean1:
++#endif
++	platform_driver_unregister(&ox820_gpio_driver);
++clean0:
++	printk(KERN_ERR"ox820_gpio: initialization result %u\n", ret);
++	return ret;
++}
++
++static void __exit ox820_gpio_platform_exit(void)
++{	
++#ifdef CONFIG_GPIO_OX820_USE_IRQ
++	int j;
++#endif
++	
++	/* disable interrupts */
++	writel(0, GPIO_A_INTERRUPT_ENABLE);
++	writel(0, GPIO_B_INTERRUPT_ENABLE);
++
++#ifdef CONFIG_GPIO_OX820_USE_IRQ
++	free_irq(GPIOB_INTERRUPT, &gpio_b_irq_chip);
++	free_irq(GPIOA_INTERRUPT, &gpio_a_irq_chip);
++	
++	for(j = ox820_gpioa_irq_base; j < ox820_gpioa_irq_base + 32; ++j) {
++		irq_modify_status(j, 0, IRQ_NOREQUEST);
++		irq_set_chip(j, NULL);
++	}
++	for(j = ox820_gpiob_irq_base; j < ox820_gpiob_irq_base + 32; ++j) {
++		irq_modify_status(j, 0, IRQ_NOREQUEST);
++		irq_set_chip(j, NULL);
++	}
++#endif
++	
++	gpiochip_remove(&ox820_gpio);
++	platform_driver_unregister(&ox820_gpio_driver);
++}
++
++MODULE_DESCRIPTION("OX820 GPIO driver");
++MODULE_AUTHOR("Sven Bormann");
++MODULE_LICENSE("GPL");
++
++module_init(ox820_gpio_platform_init);
++module_exit(ox820_gpio_platform_exit);

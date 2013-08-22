@@ -1,0 +1,31 @@
+From 66fb47334988ffeab0549a748302263facae2bbd Mon Sep 17 00:00:00 2001
+From: Kay Sievers <kay.sievers@vrfy.org>
+Date: Fri, 30 Oct 2009 12:48:32 +0100
+Subject: [PATCH] UBUNTU: (pre-stable) Driver-Core: devtmpfs - set root directory mode to 0755
+
+commit 03d673e6af6490371aaf64dfe1f84c658c48b71d upstream.
+BugLink: http://bugs.launchpad.net/bugs/512370
+
+Signed-off-by: Kay Sievers <kay.sievers@vrfy.org>
+Cc: Mark Rosenstand <rosenstand@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
+Signed-off-by: Andy Whitcroft <apw@canonical.com>
+---
+ drivers/base/devtmpfs.c |    2 +-
+ 1 files changed, 1 insertions(+), 1 deletions(-)
+
+diff --git a/drivers/base/devtmpfs.c b/drivers/base/devtmpfs.c
+index fd488ad..2c60454 100644
+--- a/drivers/base/devtmpfs.c
++++ b/drivers/base/devtmpfs.c
+@@ -353,7 +353,7 @@ int __init devtmpfs_init(void)
+ 		return err;
+ 	}
+ 
+-	mnt = kern_mount(&dev_fs_type);
++	mnt = kern_mount_data(&dev_fs_type, "mode=0755");
+ 	if (IS_ERR(mnt)) {
+ 		err = PTR_ERR(mnt);
+ 		printk(KERN_ERR "devtmpfs: unable to create devtmpfs %i\n", err);
+-- 
+1.7.0.4
