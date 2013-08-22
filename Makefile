@@ -1,7 +1,7 @@
 VERSION = 2
 PATCHLEVEL = 6
-SUBLEVEL = 32
-EXTRAVERSION = -00
+SUBLEVEL = 32 ### used to be '31', but needs to be at least '32' for newer udev versions to work correctly
+EXTRAVERSION = -00 ### this was just added to emphasise that it is NOT a real 2.6.32 kernel release, but rather a intendedly "fake" one
 NAME = Pseudo 2.6.32 for OXNAS
 
 # *DOCUMENTATION*
