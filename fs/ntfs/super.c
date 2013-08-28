@@ -3114,17 +3114,17 @@ static int __init init_ntfs_fs(void)
 	int err = 0;
 
 	/* This may be ugly but it results in pretty output so who cares. (-8 */
-//	printk(KERN_INFO "NTFS driver " NTFS_VERSION " [Flags: R/"
+//	printk(KERN_INFO "NTFS driver NTFS_VERSION [Flags: R/"
 #ifdef NTFS_RW
-	printk(KERN_INFO "NTFS driver " NTFS_VERSION " [Flags: R/W].\n");
+	printk(KERN_INFO "NTFS driver NTFS_VERSION [Flags: R/W].\n");
 #else
-	printk(KERN_INFO "NTFS driver " NTFS_VERSION " [Flags: R/O].\n");
+	printk(KERN_INFO "NTFS driver NTFS_VERSION [Flags: R/O].\n");
 #endif
 #ifdef DEBUG
-	printk(KERN_INFO "NTFS driver " NTFS_VERSION " [Flags: R/ DEBUG].\n");
+	printk(KERN_INFO "NTFS driver NTFS_VERSION [Flags: R/ DEBUG].\n");
 #endif
 #ifdef MODULE
-	printk(KERN_INFO "NTFS driver " NTFS_VERSION " [Flags: R/ MODULE].\n");
+	printk(KERN_INFO "NTFS driver NTFS_VERSION [Flags: R/ MODULE].\n");
 #endif
 //			"].\n");
 
@@ -3224,7 +3224,7 @@ static void __exit exit_ntfs_fs(void)
 
 MODULE_AUTHOR("Anton Altaparmakov <aia21@cantab.net>");
 MODULE_DESCRIPTION("NTFS 1.2/3.x driver - Copyright (c) 2001-2007 Anton Altaparmakov");
-MODULE_VERSION(NTFS_VERSION);
+MODULE_VERSION("NTFS_VERSION");
 MODULE_LICENSE("GPL");
 #ifdef DEBUG
 module_param(debug_msgs, bool, 0);
