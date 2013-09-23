@@ -51,7 +51,7 @@ extern spinlock_t oxnas_gpio_spinlock;
 
 DECLARE_WAIT_QUEUE_HEAD(wq);
 
-#define	NUM_PARTITIONS	7
+#define	NUM_PARTITIONS	2
  static struct mtd_partition partition_info[] =
  {
  	{
@@ -62,7 +62,7 @@ DECLARE_WAIT_QUEUE_HEAD(wq);
  	{
 		.name = "rootfs",
  		.offset = MTDPART_OFS_NXTBLK,
- 		.size = MTDPART_SIZ_FULL
+ 		.size = MTDPART_SIZ_FULL // the rest of the NAND for the OS rootfs
  	}
 };
 
