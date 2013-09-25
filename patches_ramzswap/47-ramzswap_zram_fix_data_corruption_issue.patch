@@ -1,0 +1,50 @@
+From 5414e557fca545614ceedc3d3496f747457e2e3b Mon Sep 17 00:00:00 2001
+From: Nitin Gupta <ngupta@vflare.org>
+Date: Sun, 06 Feb 2011 01:34:20 +0000
+Subject: staging: zram: fix data corruption issue
+
+In zram_read() and zram_write() we were not incrementing the
+index number and thus were reading/writing values from/to
+incorrect sectors on zram disk, resulting in data corruption.
+
+Signed-off-by: Nitin Gupta <ngupta@vflare.org>
+Cc: stable <stable@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
+---
+diff --git a/drivers/staging/zram/zram_drv.c b/drivers/staging/zram/zram_drv.c
+index 5415712..4bd8cbd 100644
+--- a/drivers/staging/zram/zram_drv.c
++++ b/drivers/staging/zram/zram_drv.c
+@@ -227,6 +227,7 @@ static int zram_read(struct zram *zram, struct bio *bio)
+ 
+ 		if (zram_test_flag(zram, index, ZRAM_ZERO)) {
+ 			handle_zero_page(page);
++			index++;
+ 			continue;
+ 		}
+ 
+@@ -235,12 +236,14 @@ static int zram_read(struct zram *zram, struct bio *bio)
+ 			pr_debug("Read before write: sector=%lu, size=%u",
+ 				(ulong)(bio->bi_sector), bio->bi_size);
+ 			/* Do nothing */
++			index++;
+ 			continue;
+ 		}
+ 
+ 		/* Page is stored uncompressed since it's incompressible */
+ 		if (unlikely(zram_test_flag(zram, index, ZRAM_UNCOMPRESSED))) {
+ 			handle_uncompressed_page(zram, page, index);
++			index++;
+ 			continue;
+ 		}
+ 
+@@ -320,6 +323,7 @@ static int zram_write(struct zram *zram, struct bio *bio)
+ 			mutex_unlock(&zram->lock);
+ 			zram_stat_inc(&zram->stats.pages_zero);
+ 			zram_set_flag(zram, index, ZRAM_ZERO);
++			index++;
+ 			continue;
+ 		}
+ 
+--
+cgit v0.9.2

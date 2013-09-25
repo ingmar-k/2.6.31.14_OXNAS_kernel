@@ -1,0 +1,35 @@
+From f2da98739da4e20e907f8317d513868764002d31 Mon Sep 17 00:00:00 2001
+From: Jerome Marchand <jmarchan@redhat.com>
+Date: Fri, 17 Dec 2010 16:02:28 +0000
+Subject: Staging: zram: round up the disk size provided by user
+
+Currently disksize_store() round down the disk size provided by user.
+This is probably not what one would expect, so round up instead.
+
+Signed-off-by: Jerome Marchand <jmarchan@redhat.com>
+Acked-by: Jeff Moyer <jmoyer@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
+---
+diff --git a/drivers/staging/zram/zram_sysfs.c b/drivers/staging/zram/zram_sysfs.c
+index ad62db2..a70cc01 100644
+--- a/drivers/staging/zram/zram_sysfs.c
++++ b/drivers/staging/zram/zram_sysfs.c
+@@ -14,6 +14,7 @@
+ 
+ #include <linux/device.h>
+ #include <linux/genhd.h>
++#include <linux/mm.h>
+ 
+ #include "zram_drv.h"
+ 
+@@ -65,7 +66,7 @@ static ssize_t disksize_store(struct device *dev,
+ 	if (ret)
+ 		return ret;
+ 
+-	zram->disksize &= PAGE_MASK;
++	zram->disksize = PAGE_ALIGN(zram->disksize);
+ 	set_capacity(zram->disk, zram->disksize >> SECTOR_SHIFT);
+ 
+ 	return len;
+--
+cgit v0.9.2

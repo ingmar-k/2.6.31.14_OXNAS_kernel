@@ -1,0 +1,70 @@
+From 6630889735ec3d950b4f1496ada77df287d8ee1b Mon Sep 17 00:00:00 2001
+From: Dan Magenheimer <dan.magenheimer@oracle.com>
+Date: Mon, 07 Feb 2011 03:27:09 +0000
+Subject: staging: zcache: misc build/config
+
+[PATCH V2 3/3] drivers/staging: zcache: misc build/config
+
+Makefiles and Kconfigs to build zcache in drivers/staging
+
+There is a dependency on xvmalloc.* which in 2.6.37 resides
+in drivers/staging/zram.  Should this move or disappear,
+some Makefile/Kconfig changes will be required.
+
+Signed-off-by: Dan Magenheimer <dan.magenheimer@oracle.com>
+Signed-off-by: Nitin Gupta <ngupta@vflare.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
+---
+diff --git a/drivers/staging/Kconfig b/drivers/staging/Kconfig
+index b80755d..118bf52 100644
+--- a/drivers/staging/Kconfig
++++ b/drivers/staging/Kconfig
+@@ -127,6 +127,8 @@ source "drivers/staging/cs5535_gpio/Kconfig"
+ 
+ source "drivers/staging/zram/Kconfig"
+ 
++source "drivers/staging/zcache/Kconfig"
++
+ source "drivers/staging/wlags49_h2/Kconfig"
+ 
+ source "drivers/staging/wlags49_h25/Kconfig"
+diff --git a/drivers/staging/Makefile b/drivers/staging/Makefile
+index fd26509..625bae2 100644
+--- a/drivers/staging/Makefile
++++ b/drivers/staging/Makefile
+@@ -45,6 +45,7 @@ obj-$(CONFIG_DX_SEP)            += sep/
+ obj-$(CONFIG_IIO)		+= iio/
+ obj-$(CONFIG_CS5535_GPIO)	+= cs5535_gpio/
+ obj-$(CONFIG_ZRAM)		+= zram/
++obj-$(CONFIG_ZCACHE)		+= zcache/
+ obj-$(CONFIG_WLAGS49_H2)	+= wlags49_h2/
+ obj-$(CONFIG_WLAGS49_H25)	+= wlags49_h25/
+ obj-$(CONFIG_SAMSUNG_LAPTOP)	+= samsung-laptop/
+diff --git a/drivers/staging/zcache/Kconfig b/drivers/staging/zcache/Kconfig
+new file mode 100644
+index 0000000..7fabcb2
+--- /dev/null
++++ b/drivers/staging/zcache/Kconfig
+@@ -0,0 +1,13 @@
++config ZCACHE
++	tristate "Dynamic compression of swap pages and clean pagecache pages"
++	depends on CLEANCACHE || FRONTSWAP
++	select XVMALLOC
++	select LZO_COMPRESS
++	select LZO_DECOMPRESS
++	default n
++	help
++	  Zcache doubles RAM efficiency while providing a significant
++	  performance boosts on many workloads.  Zcache uses lzo1x
++	  compression and an in-kernel implementation of transcendent
++	  memory to store clean page cache pages and swap in RAM,
++	  providing a noticeable reduction in disk I/O.
+diff --git a/drivers/staging/zcache/Makefile b/drivers/staging/zcache/Makefile
+new file mode 100644
+index 0000000..7f64de4
+--- /dev/null
++++ b/drivers/staging/zcache/Makefile
+@@ -0,0 +1 @@
++obj-$(CONFIG_ZCACHE)	+=	zcache.o tmem.o
+--
+cgit v0.9.2

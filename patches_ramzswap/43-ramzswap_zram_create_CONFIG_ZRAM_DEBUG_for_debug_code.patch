@@ -1,0 +1,60 @@
+From b1f5b81ebeee3974a8c793cafacace991d9a864d Mon Sep 17 00:00:00 2001
+From: Robert Jennings <rcj@linux.vnet.ibm.com>
+Date: Fri, 28 Jan 2011 14:59:26 +0000
+Subject: zram/xvmalloc: create CONFIG_ZRAM_DEBUG for debug code
+
+Add a debug config flag to enable debug printk output and future
+debug code.
+
+Signed-off-by: Robert Jennings <rcj@linux.vnet.ibm.com>
+Reviewed-by: Pekka Enberg <penberg@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
+---
+diff --git a/drivers/staging/zram/Kconfig b/drivers/staging/zram/Kconfig
+index d3982e6f..2f3b484 100644
+--- a/drivers/staging/zram/Kconfig
++++ b/drivers/staging/zram/Kconfig
+@@ -15,3 +15,11 @@ config ZRAM
+ 
+ 	  See zram.txt for more information.
+ 	  Project home: http://compcache.googlecode.com/
++
++config ZRAM_DEBUG
++	bool "Compressed RAM block device debug support"
++	depends on ZRAM
++	default n
++	help
++	  This option adds additional debugging code to the compressed
++	  RAM block device driver.
+diff --git a/drivers/staging/zram/xvmalloc.c b/drivers/staging/zram/xvmalloc.c
+index 9cbe04a..4f6cb8d 100644
+--- a/drivers/staging/zram/xvmalloc.c
++++ b/drivers/staging/zram/xvmalloc.c
+@@ -10,6 +10,10 @@
+  * Released under the terms of GNU General Public License Version 2.0
+  */
+ 
++#ifdef CONFIG_ZRAM_DEBUG
++#define DEBUG
++#endif
++
+ #include <linux/bitops.h>
+ #include <linux/errno.h>
+ #include <linux/highmem.h>
+diff --git a/drivers/staging/zram/zram_drv.c b/drivers/staging/zram/zram_drv.c
+index 3c8ecab..7d11c59 100644
+--- a/drivers/staging/zram/zram_drv.c
++++ b/drivers/staging/zram/zram_drv.c
+@@ -15,6 +15,10 @@
+ #define KMSG_COMPONENT "zram"
+ #define pr_fmt(fmt) KMSG_COMPONENT ": " fmt
+ 
++#ifdef CONFIG_ZRAM_DEBUG
++#define DEBUG
++#endif
++
+ #include <linux/module.h>
+ #include <linux/kernel.h>
+ #include <linux/bio.h>
+--
+cgit v0.9.2

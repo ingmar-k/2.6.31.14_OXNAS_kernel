@@ -1,0 +1,33 @@
+From a3d13107012ea614184d3c58bb7b579905d5da11 Mon Sep 17 00:00:00 2001
+From: Greg Kroah-Hartman <gregkh@suse.de>
+Date: Thu, 18 Nov 2010 19:21:04 +0000
+Subject: Staging: zram: fix up my fixup for some sysfs attribute permissions
+
+They should be writable by root, not readable.
+Doh, stupid me with the wrong flags.
+
+Reported-by: Jonathan Cameron <jic23@cam.ac.uk>
+Cc: Nitin Gupta <ngupta@vflare.org>
+Cc: Pekka Enberg <penberg@cs.helsinki.fi>
+Cc: stable <stable@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
+---
+diff --git a/drivers/staging/zram/zram_sysfs.c b/drivers/staging/zram/zram_sysfs.c
+index c9b52b9..6b3cf00 100644
+--- a/drivers/staging/zram/zram_sysfs.c
++++ b/drivers/staging/zram/zram_sysfs.c
+@@ -189,10 +189,10 @@ static ssize_t mem_used_total_show(struct device *dev,
+ 	return sprintf(buf, "%llu\n", val);
+ }
+ 
+-static DEVICE_ATTR(disksize, S_IRUGO | S_IRUSR,
++static DEVICE_ATTR(disksize, S_IRUGO | S_IWUSR,
+ 		disksize_show, disksize_store);
+ static DEVICE_ATTR(initstate, S_IRUGO, initstate_show, NULL);
+-static DEVICE_ATTR(reset, S_IRUSR, NULL, reset_store);
++static DEVICE_ATTR(reset, S_IWUSR, NULL, reset_store);
+ static DEVICE_ATTR(num_reads, S_IRUGO, num_reads_show, NULL);
+ static DEVICE_ATTR(num_writes, S_IRUGO, num_writes_show, NULL);
+ static DEVICE_ATTR(invalid_io, S_IRUGO, invalid_io_show, NULL);
+--
+cgit v0.9.2

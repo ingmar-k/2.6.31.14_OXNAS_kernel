@@ -1,0 +1,41 @@
+From 2787f959d6c5fb258d964218ac75346019f49ee9 Mon Sep 17 00:00:00 2001
+From: Robert Jennings <rcj@linux.vnet.ibm.com>
+Date: Fri, 28 Jan 2011 15:00:42 +0000
+Subject: zram: Return zero'd pages on new reads
+
+Currently zram will do nothing to the page in the bvec when that page
+has not been previously written.  This allows random data to leak to
+user space.  That can be seen by doing the following:
+
+ ## Load the module and create a 256Mb zram device called /dev/zram0
+ # modprobe zram
+ # echo $((256*1024*1024)) > /sys/class/block/zram0/disksize
+
+ ## Initialize the device by writing zero to the first block
+ # dd if=/dev/zero of=/dev/zram0 bs=512 count=1
+
+ ## Read ~256Mb of memory into a file and hope for something interesting
+ # dd if=/dev/zram0 of=file
+
+This patch will treat an unwritten page as a zero-filled page.  If a
+page is read before a write has occurred the data returned is all 0's.
+
+Signed-off-by: Robert Jennings <rcj@linux.vnet.ibm.com>
+Reviewed-by: Pekka Enberg <penberg@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
+---
+diff --git a/drivers/staging/zram/zram_drv.c b/drivers/staging/zram/zram_drv.c
+index 7d11c59..1017d6d 100644
+--- a/drivers/staging/zram/zram_drv.c
++++ b/drivers/staging/zram/zram_drv.c
+@@ -237,7 +237,7 @@ static void zram_read(struct zram *zram, struct bio *bio)
+ 		if (unlikely(!zram->table[index].page)) {
+ 			pr_debug("Read before write: sector=%lu, size=%u",
+ 				(ulong)(bio->bi_sector), bio->bi_size);
+-			/* Do nothing */
++			handle_zero_page(page);
+ 			continue;
+ 		}
+ 
+--
+cgit v0.9.2

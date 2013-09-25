@@ -1,0 +1,28 @@
+From c4586c16859861df6af51d0aab5c4738c0e4ac44 Mon Sep 17 00:00:00 2001
+From: Justin P. Mattock <justinmattock@gmail.com>
+Date: Tue, 28 Dec 2010 06:22:31 +0000
+Subject: staging:zram:xvmalloc.c Fix a typo.
+
+Not exactly sure if this is a typo or not, due to my search
+results comming up with not that many hits. Either its dereferenceable
+or dereferencable from the two I choose the later. if it's wrong let me know
+and I'll resend.
+
+Signed-off-by: Justin P. Mattock <justinmattock@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
+---
+diff --git a/drivers/staging/zram/xvmalloc.c b/drivers/staging/zram/xvmalloc.c
+index b644067..3ed744b 100644
+--- a/drivers/staging/zram/xvmalloc.c
++++ b/drivers/staging/zram/xvmalloc.c
+@@ -46,7 +46,7 @@ static void clear_flag(struct block_header *block, enum blockflags flag)
+ }
+ 
+ /*
+- * Given <page, offset> pair, provide a derefrencable pointer.
++ * Given <page, offset> pair, provide a dereferencable pointer.
+  * This is called from xv_malloc/xv_free path, so it
+  * needs to be fast.
+  */
+--
+cgit v0.9.2

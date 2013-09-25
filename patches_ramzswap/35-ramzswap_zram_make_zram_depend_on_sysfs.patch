@@ -1,0 +1,75 @@
+From 2b152873469d2b0751e8b726df6415f05e37632e Mon Sep 17 00:00:00 2001
+From: Jerome Marchand <jmarchan@redhat.com>
+Date: Fri, 17 Dec 2010 15:59:33 +0000
+Subject: Staging: zram: make ZRAM depends on SYSFS
+
+We can not configure zram device without sysfs anyway, so make zram
+depends on it.
+
+Signed-off-by: Jerome Marchand <jmarchan@redhat.com>
+Acked-by: Jeff Moyer <jmoyer@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
+---
+diff --git a/drivers/staging/zram/Kconfig b/drivers/staging/zram/Kconfig
+index da079f8..d3982e6f 100644
+--- a/drivers/staging/zram/Kconfig
++++ b/drivers/staging/zram/Kconfig
+@@ -1,6 +1,6 @@
+ config ZRAM
+ 	tristate "Compressed RAM block device support"
+-	depends on BLOCK
++	depends on BLOCK && SYSFS
+ 	select LZO_COMPRESS
+ 	select LZO_DECOMPRESS
+ 	default n
+diff --git a/drivers/staging/zram/zram_drv.c b/drivers/staging/zram/zram_drv.c
+index 5415712..0ab931e 100644
+--- a/drivers/staging/zram/zram_drv.c
++++ b/drivers/staging/zram/zram_drv.c
+@@ -626,14 +626,12 @@ static int create_device(struct zram *zram, int device_id)
+ 
+ 	add_disk(zram->disk);
+ 
+-#ifdef CONFIG_SYSFS
+ 	ret = sysfs_create_group(&disk_to_dev(zram->disk)->kobj,
+ 				&zram_disk_attr_group);
+ 	if (ret < 0) {
+ 		pr_warning("Error creating sysfs group");
+ 		goto out;
+ 	}
+-#endif
+ 
+ 	zram->init_done = 0;
+ 
+@@ -643,10 +641,8 @@ out:
+ 
+ static void destroy_device(struct zram *zram)
+ {
+-#ifdef CONFIG_SYSFS
+ 	sysfs_remove_group(&disk_to_dev(zram->disk)->kobj,
+ 			&zram_disk_attr_group);
+-#endif
+ 
+ 	if (zram->disk) {
+ 		del_gendisk(zram->disk);
+diff --git a/drivers/staging/zram/zram_sysfs.c b/drivers/staging/zram/zram_sysfs.c
+index 6b3cf00..ad62db2 100644
+--- a/drivers/staging/zram/zram_sysfs.c
++++ b/drivers/staging/zram/zram_sysfs.c
+@@ -17,8 +17,6 @@
+ 
+ #include "zram_drv.h"
+ 
+-#ifdef CONFIG_SYSFS
+-
+ static u64 zram_stat64_read(struct zram *zram, u64 *v)
+ {
+ 	u64 val;
+@@ -220,5 +218,3 @@ static struct attribute *zram_disk_attrs[] = {
+ struct attribute_group zram_disk_attr_group = {
+ 	.attrs = zram_disk_attrs,
+ };
+-
+-#endif	/* CONFIG_SYSFS */
+--
+cgit v0.9.2

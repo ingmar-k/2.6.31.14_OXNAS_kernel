@@ -1,0 +1,28 @@
+From 1aa326640d1e91d32179310441fa3030c501d0f3 Mon Sep 17 00:00:00 2001
+From: Jerome Marchand <jmarchan@redhat.com>
+Date: Fri, 17 Dec 2010 16:03:15 +0000
+Subject: Staging: zram: make zram_read return a bio error if the device is not initialized
+
+Make zram_read() return a bio error if the device is not initialized
+instead of pretending nothing happened.
+
+Signed-off-by: Jerome Marchand <jmarchan@redhat.com>
+Acked-by: Jeff Moyer <jmoyer@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
+---
+diff --git a/drivers/staging/zram/zram_drv.c b/drivers/staging/zram/zram_drv.c
+index 0ab931e..01d6dd9 100644
+--- a/drivers/staging/zram/zram_drv.c
++++ b/drivers/staging/zram/zram_drv.c
+@@ -208,8 +208,7 @@ static int zram_read(struct zram *zram, struct bio *bio)
+ 	struct bio_vec *bvec;
+ 
+ 	if (unlikely(!zram->init_done)) {
+-		set_bit(BIO_UPTODATE, &bio->bi_flags);
+-		bio_endio(bio, 0);
++		bio_endio(bio, -ENXIO);
+ 		return 0;
+ 	}
+ 
+--
+cgit v0.9.2

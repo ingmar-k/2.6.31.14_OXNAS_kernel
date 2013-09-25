@@ -1,11 +1,11 @@
 --- drivers/staging/Kconfig
 +++ drivers/staging/Kconfig
-@@ -123,6 +123,8 @@
+@@ -127,6 +127,8 @@
  
- source "drivers/staging/iio/Kconfig"
+ source "drivers/staging/zram/Kconfig"
  
-+source "drivers/staging/ramzswap/Kconfig"
++source "drivers/staging/zcache/Kconfig"
 +
- source "drivers/staging/strip/Kconfig"
+ source "drivers/staging/wlags49_h2/Kconfig"
  
- source "drivers/staging/arlan/Kconfig"
+ source "drivers/staging/wlags49_h25/Kconfig"

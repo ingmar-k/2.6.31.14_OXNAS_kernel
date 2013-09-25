@@ -1,0 +1,33 @@
+From 37700965858a099d250bca531ca1c99b22c8708d Mon Sep 17 00:00:00 2001
+From: Robert Jennings <rcj@linux.vnet.ibm.com>
+Date: Fri, 28 Jan 2011 15:00:03 +0000
+Subject: zram/xvmalloc: Close 32byte hole on 64bit CPUs
+
+By swapping the total_pages statistic with the lock we close a
+hole in the structure for 64-bit CPUs.
+
+Signed-off-by: Robert Jennings <rcj@linux.vnet.ibm.com>
+Reviewed-by: Pekka Enberg <penberg@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
+---
+diff --git a/drivers/staging/zram/xvmalloc_int.h b/drivers/staging/zram/xvmalloc_int.h
+index 82a31fb..b5f1f7f 100644
+--- a/drivers/staging/zram/xvmalloc_int.h
++++ b/drivers/staging/zram/xvmalloc_int.h
+@@ -87,12 +87,9 @@ struct block_header {
+ struct xv_pool {
+ 	ulong flbitmap;
+ 	ulong slbitmap[MAX_FLI];
+-	spinlock_t lock;
+-
++	u64 total_pages;	/* stats */
+ 	struct freelist_entry freelist[NUM_FREE_LISTS];
+-
+-	/* stats */
+-	u64 total_pages;
++	spinlock_t lock;
+ };
+ 
+ #endif
+--
+cgit v0.9.2

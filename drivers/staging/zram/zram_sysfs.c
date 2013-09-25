@@ -14,10 +14,9 @@
 
 #include <linux/device.h>
 #include <linux/genhd.h>
+#include <linux/mm.h>
 
 #include "zram_drv.h"
-
-#ifdef CONFIG_SYSFS
 
 static u64 zram_stat64_read(struct zram *zram, u64 *v)
 {
@@ -67,7 +66,7 @@ static ssize_t disksize_store(struct device *dev,
 	if (ret)
 		return ret;
 
-	zram->disksize &= PAGE_MASK;
+	zram->disksize = PAGE_ALIGN(zram->disksize);
 	set_capacity(zram->disk, zram->disksize >> SECTOR_SHIFT);
 
 	return len;
@@ -189,10 +188,10 @@ static ssize_t mem_used_total_show(struct device *dev,
 	return sprintf(buf, "%llu\n", val);
 }
 
-static DEVICE_ATTR(disksize, S_IRUGO | S_IWUGO,
+static DEVICE_ATTR(disksize, S_IRUGO | S_IWUSR,
 		disksize_show, disksize_store);
 static DEVICE_ATTR(initstate, S_IRUGO, initstate_show, NULL);
-static DEVICE_ATTR(reset, S_IWUGO, NULL, reset_store);
+static DEVICE_ATTR(reset, S_IWUSR, NULL, reset_store);
 static DEVICE_ATTR(num_reads, S_IRUGO, num_reads_show, NULL);
 static DEVICE_ATTR(num_writes, S_IRUGO, num_writes_show, NULL);
 static DEVICE_ATTR(invalid_io, S_IRUGO, invalid_io_show, NULL);
@@ -220,5 +219,3 @@ static struct attribute *zram_disk_attrs[] = {
 struct attribute_group zram_disk_attr_group = {
 	.attrs = zram_disk_attrs,
 };
-
-#endif	/* CONFIG_SYSFS */

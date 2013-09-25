@@ -1,0 +1,94 @@
+From 7d7854b4da52a1e40a41d26048f7940e4eb7193b Mon Sep 17 00:00:00 2001
+From: Nitin Gupta <ngupta@vflare.org>
+Date: Sat, 22 Jan 2011 12:36:15 +0000
+Subject: Staging: zram: simplify zram_make_request
+
+zram_read() and zram_write() always return zero, so make them return
+void to simplify the code.
+
+Signed-off-by: Nitin Gupta <ngupta@vflare.org>
+Signed-off-by: Jerome Marchand <jmarchan@redhat.com>
+Acked-by: Jeff Moyer <jmoyer@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
+---
+diff --git a/drivers/staging/zram/zram_drv.c b/drivers/staging/zram/zram_drv.c
+index 01d6dd9..5ed4e75 100644
+--- a/drivers/staging/zram/zram_drv.c
++++ b/drivers/staging/zram/zram_drv.c
+@@ -200,7 +200,7 @@ static void handle_uncompressed_page(struct zram *zram,
+ 	flush_dcache_page(page);
+ }
+ 
+-static int zram_read(struct zram *zram, struct bio *bio)
++static void zram_read(struct zram *zram, struct bio *bio)
+ {
+ 
+ 	int i;
+@@ -209,7 +209,7 @@ static int zram_read(struct zram *zram, struct bio *bio)
+ 
+ 	if (unlikely(!zram->init_done)) {
+ 		bio_endio(bio, -ENXIO);
+-		return 0;
++		return;
+ 	}
+ 
+ 	zram_stat64_inc(zram, &zram->stats.num_reads);
+@@ -271,14 +271,13 @@ static int zram_read(struct zram *zram, struct bio *bio)
+ 
+ 	set_bit(BIO_UPTODATE, &bio->bi_flags);
+ 	bio_endio(bio, 0);
+-	return 0;
++	return;
+ 
+ out:
+ 	bio_io_error(bio);
+-	return 0;
+ }
+ 
+-static int zram_write(struct zram *zram, struct bio *bio)
++static void zram_write(struct zram *zram, struct bio *bio)
+ {
+ 	int i, ret;
+ 	u32 index;
+@@ -402,11 +401,10 @@ memstore:
+ 
+ 	set_bit(BIO_UPTODATE, &bio->bi_flags);
+ 	bio_endio(bio, 0);
+-	return 0;
++	return;
+ 
+ out:
+ 	bio_io_error(bio);
+-	return 0;
+ }
+ 
+ /*
+@@ -431,7 +429,6 @@ static inline int valid_io_request(struct zram *zram, struct bio *bio)
+  */
+ static int zram_make_request(struct request_queue *queue, struct bio *bio)
+ {
+-	int ret = 0;
+ 	struct zram *zram = queue->queuedata;
+ 
+ 	if (!valid_io_request(zram, bio)) {
+@@ -442,15 +439,15 @@ static int zram_make_request(struct request_queue *queue, struct bio *bio)
+ 
+ 	switch (bio_data_dir(bio)) {
+ 	case READ:
+-		ret = zram_read(zram, bio);
++		zram_read(zram, bio);
+ 		break;
+ 
+ 	case WRITE:
+-		ret = zram_write(zram, bio);
++		zram_write(zram, bio);
+ 		break;
+ 	}
+ 
+-	return ret;
++	return 0;
+ }
+ 
+ void zram_reset_device(struct zram *zram)
+--
+cgit v0.9.2
