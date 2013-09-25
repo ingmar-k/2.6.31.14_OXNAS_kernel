@@ -1,0 +1,26 @@
+From f70615a8f134c4ebe3c2848bb43a68335406a001 Mon Sep 17 00:00:00 2001
+From: Huang Weiyi <weiyi.huang@gmail.com>
+Date: Sun, 13 Dec 2009 14:06:25 +0000
+Subject: Staging: ramzswap: remove unused #include <linux/version.h>
+
+Remove unused #include <linux/version.h>('s) in
+  drivers/staging/ramzswap/ramzswap_drv.c
+
+Signed-off-by: Huang Weiyi <weiyi.huang@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
+
+---
+diff --git a/drivers/staging/ramzswap/ramzswap_drv.c b/drivers/staging/ramzswap/ramzswap_drv.c
+index 989fac5..18196f3 100644
+--- a/drivers/staging/ramzswap/ramzswap_drv.c
++++ b/drivers/staging/ramzswap/ramzswap_drv.c
+@@ -29,7 +29,6 @@
+ #include <linux/swap.h>
+ #include <linux/swapops.h>
+ #include <linux/vmalloc.h>
+-#include <linux/version.h>
+ 
+ #include "ramzswap_drv.h"
+ 
+--
+cgit v0.9.2

@@ -1,0 +1,131 @@
+From ef4ffb7ade54f7669172cf5cead69695e588c06a Mon Sep 17 00:00:00 2001
+From: C yp <cyp561@gmail.com>
+Date: Wed, 06 Jan 2010 12:42:00 +0000
+Subject: Staging: ramzswap: Minor spelling fixes
+
+Also removed an extra semicolon.
+
+Signed-off-by: Cyp <cyp561@gmail.com>
+Cc: Nitin Gupta <ngupta@vflare.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
+
+---
+diff --git a/drivers/staging/ramzswap/Kconfig b/drivers/staging/ramzswap/Kconfig
+index 24e2569..127b3c6 100644
+--- a/drivers/staging/ramzswap/Kconfig
++++ b/drivers/staging/ramzswap/Kconfig
+@@ -5,7 +5,7 @@ config RAMZSWAP
+ 	select LZO_DECOMPRESS
+ 	default n
+ 	help
+-	  Creates virtual block devices which can be used (only) as a swap
++	  Creates virtual block devices which can (only) be used as swap
+ 	  disks. Pages swapped to these disks are compressed and stored in
+ 	  memory itself.
+ 
+diff --git a/drivers/staging/ramzswap/ramzswap.txt b/drivers/staging/ramzswap/ramzswap.txt
+index e9f1619..9694acf 100644
+--- a/drivers/staging/ramzswap/ramzswap.txt
++++ b/drivers/staging/ramzswap/ramzswap.txt
+@@ -5,9 +5,9 @@ Project home: http://compcache.googlecode.com/
+ 
+ * Introduction
+ 
+-It creates RAM based block devices which can be used (only) as swap disks.
+-Pages swapped to these devices are compressed and stored in memory itself.
+-See project home for use cases, performance numbers and a lot more.
++The ramzswap module creates RAM based block devices which can (only) be used as
++swap disks. Pages swapped to these devices are compressed and stored in memory
++itself. See project home for use cases, performance numbers and a lot more.
+ 
+ Individual ramzswap devices are configured and initialized using rzscontrol
+ userspace utility as shown in examples below. See rzscontrol man page for more
+diff --git a/drivers/staging/ramzswap/ramzswap_drv.c b/drivers/staging/ramzswap/ramzswap_drv.c
+index 18196f3..7a7ead4 100644
+--- a/drivers/staging/ramzswap/ramzswap_drv.c
++++ b/drivers/staging/ramzswap/ramzswap_drv.c
+@@ -730,7 +730,7 @@ static int ramzswap_read(struct ramzswap *rzs, struct bio *bio)
+ 	if (!rzs->table[index].page)
+ 		return handle_ramzswap_fault(rzs, bio);
+ 
+-	/* Page is stored uncompressed since its incompressible */
++	/* Page is stored uncompressed since it's incompressible */
+ 	if (unlikely(rzs_test_flag(rzs, index, RZS_UNCOMPRESSED)))
+ 		return handle_uncompressed_page(rzs, bio);
+ 
+@@ -792,7 +792,7 @@ static int ramzswap_write(struct ramzswap *rzs, struct bio *bio)
+ 		ramzswap_free_page(rzs, index);
+ 
+ 	/*
+-	 * No memory ia allocated for zero filled pages.
++	 * No memory is allocated for zero filled pages.
+ 	 * Simply clear zero page flag.
+ 	 */
+ 	if (rzs_test_flag(rzs, index, RZS_ZERO)) {
+diff --git a/drivers/staging/ramzswap/ramzswap_drv.h b/drivers/staging/ramzswap/ramzswap_drv.h
+index a6ea240..7ba98bf 100644
+--- a/drivers/staging/ramzswap/ramzswap_drv.h
++++ b/drivers/staging/ramzswap/ramzswap_drv.h
+@@ -102,7 +102,7 @@ struct table {
+ 	u16 offset;
+ 	u8 count;	/* object ref count (not yet used) */
+ 	u8 flags;
+-} __attribute__((aligned(4)));;
++} __attribute__((aligned(4)));
+ 
+ /*
+  * Swap extent information in case backing swap is a regular
+@@ -121,8 +121,8 @@ struct ramzswap_stats {
+ #if defined(CONFIG_RAMZSWAP_STATS)
+ 	u64 num_reads;		/* failed + successful */
+ 	u64 num_writes;		/* --do-- */
+-	u64 failed_reads;	/* can happen when memory is too low */
+-	u64 failed_writes;	/* should NEVER! happen */
++	u64 failed_reads;	/* should NEVER! happen */
++	u64 failed_writes;	/* can happen when memory is too low */
+ 	u64 invalid_io;		/* non-swap I/O requests */
+ 	u32 pages_zero;		/* no. of zero filled pages */
+ 	u32 pages_stored;	/* no. of pages currently stored */
+diff --git a/drivers/staging/ramzswap/ramzswap_ioctl.h b/drivers/staging/ramzswap/ramzswap_ioctl.h
+index c713a09..1bc54e2 100644
+--- a/drivers/staging/ramzswap/ramzswap_ioctl.h
++++ b/drivers/staging/ramzswap/ramzswap_ioctl.h
+@@ -24,8 +24,8 @@ struct ramzswap_ioctl_stats {
+ 				 * size (if present) */
+ 	u64 num_reads;		/* failed + successful */
+ 	u64 num_writes;		/* --do-- */
+-	u64 failed_reads;	/* can happen when memory is too low */
+-	u64 failed_writes;	/* should NEVER! happen */
++	u64 failed_reads;	/* should NEVER! happen */
++	u64 failed_writes;	/* can happen when memory is too low */
+ 	u64 invalid_io;		/* non-swap I/O requests */
+ 	u32 pages_zero;		/* no. of zero filled pages */
+ 	u32 good_compress_pct;	/* no. of pages with compression ratio<=50% */
+diff --git a/drivers/staging/ramzswap/xvmalloc.c b/drivers/staging/ramzswap/xvmalloc.c
+index b3e986c..dabd266 100644
+--- a/drivers/staging/ramzswap/xvmalloc.c
++++ b/drivers/staging/ramzswap/xvmalloc.c
+@@ -273,7 +273,7 @@ static void remove_block(struct xv_pool *pool, struct page *page, u32 offset,
+ }
+ 
+ /*
+- * Allocate a page and add it freelist of given pool.
++ * Allocate a page and add it to freelist of given pool.
+  */
+ static int grow_pool(struct xv_pool *pool, gfp_t flags)
+ {
+diff --git a/drivers/staging/ramzswap/xvmalloc_int.h b/drivers/staging/ramzswap/xvmalloc_int.h
+index 03c1a65..263c72d 100644
+--- a/drivers/staging/ramzswap/xvmalloc_int.h
++++ b/drivers/staging/ramzswap/xvmalloc_int.h
+@@ -62,7 +62,7 @@ struct link_free {
+ 
+ struct block_header {
+ 	union {
+-		/* This common header must be ALIGN bytes */
++		/* This common header must be XV_ALIGN bytes */
+ 		u8 common[XV_ALIGN];
+ 		struct {
+ 			u16 size;
+--
+cgit v0.9.2

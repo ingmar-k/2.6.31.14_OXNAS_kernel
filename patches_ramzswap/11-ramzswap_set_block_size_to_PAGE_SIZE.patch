@@ -1,0 +1,31 @@
+From 5d83d5a0b5ee332b724978d657c0af17f14e807e Mon Sep 17 00:00:00 2001
+From: Nitin Gupta <ngupta@vflare.org>
+Date: Thu, 28 Jan 2010 15:43:39 +0000
+Subject: Staging: ramzswap: Set block size to PAGE_SIZE
+
+ramzswap block size needs to be set equal to PAGE_SIZE to
+avoid receiving any unaligned block I/O requests (happens
+due to readahead logic during swapon). These unaligned
+accesses produce unnecessary I/O errors, scaring users.
+
+Signed-off-by: Nitin Gupta <ngupta@vflare.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
+
+---
+diff --git a/drivers/staging/ramzswap/ramzswap_drv.c b/drivers/staging/ramzswap/ramzswap_drv.c
+index 3567ee3..2021ad6 100644
+--- a/drivers/staging/ramzswap/ramzswap_drv.c
++++ b/drivers/staging/ramzswap/ramzswap_drv.c
+@@ -1335,6 +1335,10 @@ static int create_device(struct ramzswap *rzs, int device_id)
+ 	 * or set equal to backing swap device (if provided)
+ 	 */
+ 	set_capacity(rzs->disk, 0);
++
++	blk_queue_physical_block_size(rzs->disk->queue, PAGE_SIZE);
++	blk_queue_logical_block_size(rzs->disk->queue, PAGE_SIZE);
++
+ 	add_disk(rzs->disk);
+ 
+ 	rzs->init_done = 0;
+--
+cgit v0.9.2

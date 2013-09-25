@@ -1,0 +1,23 @@
+From 273ad8dcef345cac55a5db910137c10953f81480 Mon Sep 17 00:00:00 2001
+From: Shahar Havivi <shaharh@redhat.com>
+Date: Sat, 28 Aug 2010 07:09:05 +0000
+Subject: Staging: zram: free device memory when init fails
+
+Signed-off-by: Shahar Havivi <shaharh@redhat.com>
+Cc: Nitin Gupta <ngupta@vflare.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
+---
+diff --git a/drivers/staging/zram/zram_drv.c b/drivers/staging/zram/zram_drv.c
+index 77d4d71..722c840 100644
+--- a/drivers/staging/zram/zram_drv.c
++++ b/drivers/staging/zram/zram_drv.c
+@@ -769,6 +769,7 @@ static int __init zram_init(void)
+ free_devices:
+ 	while (dev_id)
+ 		destroy_device(&devices[--dev_id]);
++	kfree(devices);
+ unregister:
+ 	unregister_blkdev(zram_major, "zram");
+ out:
+--
+cgit v0.9.2

@@ -1,0 +1,91 @@
+From 1130ebbaae8ed0dcf8be707449601f8d7dbb7538 Mon Sep 17 00:00:00 2001
+From: Nitin Gupta <ngupta@vflare.org>
+Date: Thu, 28 Jan 2010 15:51:35 +0000
+Subject: Staging: ramzswap: Update copyright notice
+
+Update copyright notice.
+
+Signed-off-by: Nitin Gupta <ngupta@vflare.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
+
+---
+diff --git a/drivers/staging/ramzswap/ramzswap_drv.c b/drivers/staging/ramzswap/ramzswap_drv.c
+index 1bca069..5e422e2 100644
+--- a/drivers/staging/ramzswap/ramzswap_drv.c
++++ b/drivers/staging/ramzswap/ramzswap_drv.c
+@@ -1,7 +1,7 @@
+ /*
+  * Compressed RAM based swap device
+  *
+- * Copyright (C) 2008, 2009  Nitin Gupta
++ * Copyright (C) 2008, 2009, 2010  Nitin Gupta
+  *
+  * This code is released using a dual license strategy: BSD/GPL
+  * You can choose the licence that better fits your requirements.
+diff --git a/drivers/staging/ramzswap/ramzswap_drv.h b/drivers/staging/ramzswap/ramzswap_drv.h
+index 5b67222..c7e0e76 100644
+--- a/drivers/staging/ramzswap/ramzswap_drv.h
++++ b/drivers/staging/ramzswap/ramzswap_drv.h
+@@ -1,7 +1,7 @@
+ /*
+  * Compressed RAM based swap device
+  *
+- * Copyright (C) 2008, 2009  Nitin Gupta
++ * Copyright (C) 2008, 2009, 2010  Nitin Gupta
+  *
+  * This code is released using a dual license strategy: BSD/GPL
+  * You can choose the licence that better fits your requirements.
+diff --git a/drivers/staging/ramzswap/ramzswap_ioctl.h b/drivers/staging/ramzswap/ramzswap_ioctl.h
+index 1edaeba..d26076d 100644
+--- a/drivers/staging/ramzswap/ramzswap_ioctl.h
++++ b/drivers/staging/ramzswap/ramzswap_ioctl.h
+@@ -1,7 +1,7 @@
+ /*
+  * Compressed RAM based swap device
+  *
+- * Copyright (C) 2008, 2009  Nitin Gupta
++ * Copyright (C) 2008, 2009, 2010  Nitin Gupta
+  *
+  * This code is released using a dual license strategy: BSD/GPL
+  * You can choose the licence that better fits your requirements.
+diff --git a/drivers/staging/ramzswap/xvmalloc.c b/drivers/staging/ramzswap/xvmalloc.c
+index dabd266..3fdbb8a 100644
+--- a/drivers/staging/ramzswap/xvmalloc.c
++++ b/drivers/staging/ramzswap/xvmalloc.c
+@@ -1,7 +1,7 @@
+ /*
+  * xvmalloc memory allocator
+  *
+- * Copyright (C) 2008, 2009  Nitin Gupta
++ * Copyright (C) 2008, 2009, 2010  Nitin Gupta
+  *
+  * This code is released using a dual license strategy: BSD/GPL
+  * You can choose the licence that better fits your requirements.
+diff --git a/drivers/staging/ramzswap/xvmalloc.h b/drivers/staging/ramzswap/xvmalloc.h
+index 010c6fe..5b1a81a 100644
+--- a/drivers/staging/ramzswap/xvmalloc.h
++++ b/drivers/staging/ramzswap/xvmalloc.h
+@@ -1,7 +1,7 @@
+ /*
+  * xvmalloc memory allocator
+  *
+- * Copyright (C) 2008, 2009  Nitin Gupta
++ * Copyright (C) 2008, 2009, 2010  Nitin Gupta
+  *
+  * This code is released using a dual license strategy: BSD/GPL
+  * You can choose the licence that better fits your requirements.
+diff --git a/drivers/staging/ramzswap/xvmalloc_int.h b/drivers/staging/ramzswap/xvmalloc_int.h
+index 263c72d..e23ed5c 100644
+--- a/drivers/staging/ramzswap/xvmalloc_int.h
++++ b/drivers/staging/ramzswap/xvmalloc_int.h
+@@ -1,7 +1,7 @@
+ /*
+  * xvmalloc memory allocator
+  *
+- * Copyright (C) 2008, 2009  Nitin Gupta
++ * Copyright (C) 2008, 2009, 2010  Nitin Gupta
+  *
+  * This code is released using a dual license strategy: BSD/GPL
+  * You can choose the licence that better fits your requirements.
+--
+cgit v0.9.2

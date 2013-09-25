@@ -1,0 +1,71 @@
+From 107c161b7ddeeb7da43509cc6b29211885ccd9af Mon Sep 17 00:00:00 2001
+From: Nitin Gupta <ngupta@vflare.org>
+Date: Mon, 17 May 2010 05:32:44 +0000
+Subject: Staging: ramzswap: Handler for swap slot free callback
+
+Install handler for swap_slot_free_notify callback which is called
+when a swap slot is no longer used. This handler immediately frees
+memory allocated corresponding to the given swap slot.
+
+Signed-off-by: Nitin Gupta <ngupta@vflare.org>
+Acked-by: Linus Torvalds <torvalds@linux-foundation.org>
+Acked-by: Nigel Cunningham <nigel@tuxonice.net>
+Acked-by: Pekka Enberg <penberg@cs.helsinki.fi>
+Reviewed-by: Minchan Kim <minchan.kim@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
+---
+diff --git a/drivers/staging/ramzswap/TODO b/drivers/staging/ramzswap/TODO
+deleted file mode 100644
+index 8d64e28..0000000
+--- a/drivers/staging/ramzswap/TODO
++++ /dev/null
+@@ -1,5 +0,0 @@
+-TODO:
+-	- Add support for swap notifiers
+-
+-Please send patches to Greg Kroah-Hartman <greg@kroah.com> and
+-Nitin Gupta <ngupta@vflare.org>
+diff --git a/drivers/staging/ramzswap/ramzswap_drv.c b/drivers/staging/ramzswap/ramzswap_drv.c
+index 167f8d1..d14bf91 100644
+--- a/drivers/staging/ramzswap/ramzswap_drv.c
++++ b/drivers/staging/ramzswap/ramzswap_drv.c
+@@ -335,14 +335,6 @@ static int ramzswap_write(struct ramzswap *rzs, struct bio *bio)
+ 
+ 	src = rzs->compress_buffer;
+ 
+-	/*
+-	 * System swaps to same sector again when the stored page
+-	 * is no longer referenced by any process. So, its now safe
+-	 * to free the memory that was allocated for this page.
+-	 */
+-	if (rzs->table[index].page || rzs_test_flag(rzs, index, RZS_ZERO))
+-		ramzswap_free_page(rzs, index);
+-
+ 	mutex_lock(&rzs->lock);
+ 
+ 	user_mem = kmap_atomic(page, KM_USER0);
+@@ -690,9 +682,21 @@ out:
+ 	return ret;
+ }
+ 
++void ramzswap_slot_free_notify(struct block_device *bdev, unsigned long index)
++{
++	struct ramzswap *rzs;
++
++	rzs = bdev->bd_disk->private_data;
++	ramzswap_free_page(rzs, index);
++	rzs_stat64_inc(rzs, &rzs->stats.notify_free);
++
++	return;
++}
++
+ static struct block_device_operations ramzswap_devops = {
+ 	.ioctl = ramzswap_ioctl,
+-	.owner = THIS_MODULE,
++	.swap_slot_free_notify = ramzswap_slot_free_notify,
++	.owner = THIS_MODULE
+ };
+ 
+ static int create_device(struct ramzswap *rzs, int device_id)
+--
+cgit v0.9.2

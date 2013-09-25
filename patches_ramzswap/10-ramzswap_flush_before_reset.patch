@@ -1,0 +1,50 @@
+From 7eef7533909f3ea50e8b375777242f778e8da11e Mon Sep 17 00:00:00 2001
+From: Nitin Gupta <ngupta@vflare.org>
+Date: Thu, 28 Jan 2010 15:43:38 +0000
+Subject: Staging: ramzswap: Flush block device before reset
+
+Make sure we flush block device before freeing all metadata
+during reset ioctl.
+
+Signed-off-by: Nitin Gupta <ngupta@vflar.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
+
+---
+diff --git a/drivers/staging/ramzswap/ramzswap_drv.c b/drivers/staging/ramzswap/ramzswap_drv.c
+index 05273c0..3567ee3 100644
+--- a/drivers/staging/ramzswap/ramzswap_drv.c
++++ b/drivers/staging/ramzswap/ramzswap_drv.c
+@@ -1000,6 +1000,9 @@ static void reset_device(struct ramzswap *rzs)
+ 	unsigned entries_per_page;
+ 	unsigned long num_table_pages, entry = 0;
+ 
++	/* Do not accept any new I/O request */
++	rzs->init_done = 0;
++
+ 	if (rzs->backing_swap && !rzs->num_extents)
+ 		is_backing_blkdev = 1;
+ 
+@@ -1073,9 +1076,6 @@ static void reset_device(struct ramzswap *rzs)
+ 
+ 	rzs->disksize = 0;
+ 	rzs->memlimit = 0;
+-
+-	/* Back to uninitialized state */
+-	rzs->init_done = 0;
+ }
+ 
+ static int ramzswap_ioctl_init_device(struct ramzswap *rzs)
+@@ -1276,6 +1276,11 @@ static int ramzswap_ioctl(struct block_device *bdev, fmode_t mode,
+ 			ret = -EBUSY;
+ 			goto out;
+ 		}
++
++		/* Make sure all pending I/O is finished */
++		if (bdev)
++			fsync_bdev(bdev);
++
+ 		ret = ramzswap_ioctl_reset_device(rzs);
+ 		break;
+ 
+--
+cgit v0.9.2
