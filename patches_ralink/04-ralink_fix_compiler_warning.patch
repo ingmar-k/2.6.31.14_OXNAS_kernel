@@ -1,0 +1,59 @@
+From 25cf62e43110c43869a58505dae22ad5e2b1416a Mon Sep 17 00:00:00 2001
+From: Axel K <rain_maker@root-forum.org>
+Date: Thu, 03 Sep 2009 19:13:56 +0000
+Subject: Staging: rt2860/rt2870/rt3070/rt3090: fix compiler warning on x86_64
+
+When compiling rt2860/rt2870/rt3070 or rt3090 on x86_64, the following warning
+is displayed:
+
+drivers/staging/rt3090/rt_linux.c: In function 'duplicate_pkt':
+drivers/staging/rt3090/rt_linux.c:531: warning: passing argument 1 of 'memmove' makes pointer from integer without a cast
+include2/asm/string_64.h:58: note: expected 'void *' but argument is of type 'sk_buff_data_t'
+drivers/staging/rt3090/rt_linux.c:533: warning: passing argument 1 of 'memmove' makes pointer from integer without a cast
+include2/asm/string_64.h:58: note: expected 'void *' but argument is of type 'sk_buff_data_t'
+
+The following patch fixes this warning.
+
+Credits go to Helmut Schaa <hschaa@suse.de> for his kind advice/help on this
+patch.
+
+Signed-off-by: Axel Koellhofer <rain_maker@root-forum.org>
+Cc: Helmut Schaa <hschaa@suse.de>
+Acked-by: Bartlomiej Zolnierkiewicz <bzolnier@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
+
+---
+diff --git a/drivers/staging/rt2860/rt_linux.c b/drivers/staging/rt2860/rt_linux.c
+index d7d9b90..b396a9b 100644
+--- a/drivers/staging/rt2860/rt_linux.c
++++ b/drivers/staging/rt2860/rt_linux.c
+@@ -537,9 +537,9 @@ PNDIS_PACKET duplicate_pkt(
+ 	if ((skb = __dev_alloc_skb(HdrLen + DataSize + 2, MEM_ALLOC_FLAG)) != NULL)
+ 	{
+ 		skb_reserve(skb, 2);
+-		NdisMoveMemory(skb->tail, pHeader802_3, HdrLen);
++		NdisMoveMemory(skb_tail_pointer(skb), pHeader802_3, HdrLen);
+ 		skb_put(skb, HdrLen);
+-		NdisMoveMemory(skb->tail, pData, DataSize);
++		NdisMoveMemory(skb_tail_pointer(skb), pData, DataSize);
+ 		skb_put(skb, DataSize);
+ 		skb->dev = get_netdev_from_bssid(pAd, FromWhichBSSID);
+ 		pPacket = OSPKT_TO_RTPKT(skb);
+diff --git a/drivers/staging/rt3090/rt_linux.c b/drivers/staging/rt3090/rt_linux.c
+index 375d0b7..d2241ec 100644
+--- a/drivers/staging/rt3090/rt_linux.c
++++ b/drivers/staging/rt3090/rt_linux.c
+@@ -528,9 +528,9 @@ PNDIS_PACKET duplicate_pkt(
+ 	if ((skb = __dev_alloc_skb(HdrLen + DataSize + 2, MEM_ALLOC_FLAG)) != NULL)
+ 	{
+ 		skb_reserve(skb, 2);
+-		NdisMoveMemory(skb->tail, pHeader802_3, HdrLen);
++		NdisMoveMemory(skb_tail_pointer(skb), pHeader802_3, HdrLen);
+ 		skb_put(skb, HdrLen);
+-		NdisMoveMemory(skb->tail, pData, DataSize);
++		NdisMoveMemory(skb_tail_pointer(skb), pData, DataSize);
+ 		skb_put(skb, DataSize);
+ 		skb->dev = get_netdev_from_bssid(pAd, FromWhichBSSID);
+ 		pPacket = OSPKT_TO_RTPKT(skb);
+--
+cgit v0.9.2

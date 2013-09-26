@@ -1,0 +1,17 @@
+--- drivers/staging/rt2860/rt28xx.h
++++ drivers/staging/rt2860/rt28xx.h
+@@ -49,14 +49,8 @@
+ 
+ typedef int NTSTATUS;
+ 
+-#ifdef RT30xx
+ #define	OPT_14			0x114
+ 
+-#define	RETRY_LIMIT             10
+-#define STATUS_SUCCESS				0x00
+-#define STATUS_UNSUCCESSFUL 		0x01
+-#endif
+-
+ //
+ // SCH/DMA registers - base address 0x0200
+ //

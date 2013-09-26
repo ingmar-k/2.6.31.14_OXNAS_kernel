@@ -1,0 +1,26 @@
+From c5c48cbccf624fd3a66885aab7e2822b4ea882a6 Mon Sep 17 00:00:00 2001
+From: Bartlomiej Zolnierkiewicz <bzolnier@gmail.com>
+Date: Tue, 22 Sep 2009 18:43:29 +0000
+Subject: Staging: rt3090: disable HAS_ATE option
+
+Disable ATE debugging functionality.
+
+This makes rt3090 match other Ralink drivers and V2.2.0.0 vendor version.
+
+Signed-off-by: Bartlomiej Zolnierkiewicz <bzolnier@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
+
+---
+diff --git a/drivers/staging/rt3090/config.mk b/drivers/staging/rt3090/config.mk
+index 4c90c40..15ca07b 100644
+--- a/drivers/staging/rt3090/config.mk
++++ b/drivers/staging/rt3090/config.mk
+@@ -1,5 +1,5 @@
+ # Support ATE function
+-HAS_ATE=y
++HAS_ATE=n
+ 
+ # Support 28xx QA ATE function
+ HAS_28xx_QA=n
+--
+cgit v0.9.2

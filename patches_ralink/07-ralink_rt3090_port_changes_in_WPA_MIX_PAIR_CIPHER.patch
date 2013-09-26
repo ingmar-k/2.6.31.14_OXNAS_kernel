@@ -1,0 +1,28 @@
+From 230da57e68636e35c07b144fd25f4bd7f67c1e1c Mon Sep 17 00:00:00 2001
+From: Axel K <rain_maker@root-forum.org>
+Date: Thu, 03 Sep 2009 20:04:59 +0000
+Subject: Staging: rt3090: port changes in WPA_MIX_PAIR_CIPHER to rt3090
+
+This patch ports a change recently applied to rt2860/rt2870 in order to
+change handling of WPA1/WPA2 mixed mode to rt3090.
+
+Signed-off-by: Axel Koellhofer <rain_maker@root-forum.org>
+Acked-by: Bartlomiej Zolnierkiewicz <bzolnier@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
+
+---
+diff --git a/drivers/staging/rt3090/common/cmm_wpa.c b/drivers/staging/rt3090/common/cmm_wpa.c
+index 35f4701..bf68ad8 100644
+--- a/drivers/staging/rt3090/common/cmm_wpa.c
++++ b/drivers/staging/rt3090/common/cmm_wpa.c
+@@ -1904,7 +1904,7 @@ VOID RTMPMakeRSNIE(
+ 	UCHAR		PrimaryRsnie;
+ 	BOOLEAN		bMixCipher = FALSE;	// indicate the pairwise and group cipher are different
+ 	UCHAR		p_offset;
+-	WPA_MIX_PAIR_CIPHER		FlexibleCipher = MIX_CIPHER_NOTUSE;	// it provide the more flexible cipher combination in WPA-WPA2 and TKIPAES mode
++	WPA_MIX_PAIR_CIPHER		FlexibleCipher = WPA_TKIPAES_WPA2_TKIPAES;	// it provide the more flexible cipher combination in WPA-WPA2 and TKIPAES mode
+ 
+ 	rsnielen_cur_p = NULL;
+ 	rsnielen_ex_cur_p = NULL;
+--
+cgit v0.9.2

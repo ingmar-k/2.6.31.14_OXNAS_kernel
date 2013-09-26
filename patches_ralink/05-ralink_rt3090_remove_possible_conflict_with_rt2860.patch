@@ -1,0 +1,51 @@
+From 7dbefe3d581b6283c2ba70b292b450d3e2631f42 Mon Sep 17 00:00:00 2001
+From: Axel K <rain_maker@root-forum.org>
+Date: Thu, 03 Sep 2009 19:24:19 +0000
+Subject: Staging: rt3090: remove possible conflict with rt2860
+
+Both drivers (rt2860 and rt3090) register themselves as "rt2860" on
+loading the module.
+
+In the very rare case of somebody having two cards in his machine, one
+using rt3090 and the other one using the rt2860 driver, loading both
+modules would be impossible, the second one will not be loaded as the
+kernel will tell you that the driver is already registered.
+
+This was also present with rt2870/rt3070 (with both driver registering
+as "rt2870"), but the code has been merged to one driver recently.
+
+The follwoing patch fixes this potential problem until merging of
+rt2860/rt3090 code to a single driver.
+
+Signed-off-by: Axel Koellhofer <rain_maker@root-forum.org>
+Acked-by: Bartlomiej Zolnierkiewicz <bzolnier@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
+
+---
+diff --git a/drivers/staging/rt3090/pci_main_dev.c b/drivers/staging/rt3090/pci_main_dev.c
+index 4997d3a..1410156 100644
+--- a/drivers/staging/rt3090/pci_main_dev.c
++++ b/drivers/staging/rt3090/pci_main_dev.c
+@@ -106,7 +106,7 @@ MODULE_VERSION(STA_DRIVER_VERSION);
+ //
+ static struct pci_driver rt2860_driver =
+ {
+-    name:       "rt2860",
++    name:       "rt3090",
+     id_table:   rt2860_pci_tbl,
+     probe:      rt2860_probe,
+ #if LINUX_VERSION_CODE >= 0x20412
+@@ -326,9 +326,9 @@ static INT __devinit   rt2860_probe(
+ 	}
+ 
+ #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,5,0)
+-	print_name = pci_dev ? pci_name(pci_dev) : "rt2860";
++	print_name = pci_dev ? pci_name(pci_dev) : "rt3090";
+ #else
+-	print_name = pci_dev ? pci_dev->slot_name : "rt2860";
++	print_name = pci_dev ? pci_dev->slot_name : "rt3090";
+ #endif // LINUX_VERSION_CODE //
+ 
+ 	if ((rv = pci_request_regions(pci_dev, print_name)) != 0)
+--
+cgit v0.9.2

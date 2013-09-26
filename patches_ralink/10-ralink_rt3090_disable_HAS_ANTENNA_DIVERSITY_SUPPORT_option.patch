@@ -1,0 +1,26 @@
+From 8b44a41e344209a5be8e521e32e581ceb126b323 Mon Sep 17 00:00:00 2001
+From: Bartlomiej Zolnierkiewicz <bzolnier@gmail.com>
+Date: Tue, 22 Sep 2009 18:43:39 +0000
+Subject: Staging: rt3090: disable HAS_ANTENNA_DIVERSITY_SUPPORT option
+
+This makes rt3090 match other Ralink drivers and V2.2.0.0 vendor version.
+
+Signed-off-by: Bartlomiej Zolnierkiewicz <bzolnier@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
+
+---
+diff --git a/drivers/staging/rt3090/config.mk b/drivers/staging/rt3090/config.mk
+index 15ca07b..db40571 100644
+--- a/drivers/staging/rt3090/config.mk
++++ b/drivers/staging/rt3090/config.mk
+@@ -84,7 +84,7 @@ HAS_AUTO_CH_SELECT_ENHANCE=n
+ HAS_BG_FT_SUPPORT=n
+ 
+ #Support Antenna Diversity
+-HAS_ANTENNA_DIVERSITY_SUPPORT=y
++HAS_ANTENNA_DIVERSITY_SUPPORT=n
+ #################################################
+ 
+ WFLAGS := -DAGGREGATION_SUPPORT -DPIGGYBACK_SUPPORT -DWMM_SUPPORT  -DLINUX -Wall -Wstrict-prototypes -Wno-trigraphs -Wpointer-sign
+--
+cgit v0.9.2

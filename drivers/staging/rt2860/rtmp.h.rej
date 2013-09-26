@@ -1,0 +1,11 @@
+--- drivers/staging/rt2860/rtmp.h
++++ drivers/staging/rt2860/rtmp.h
+@@ -6530,8 +6522,6 @@
+ 	IN	UCHAR			RegID,
+ 	IN	PUCHAR			pValue);
+ 
+-#ifdef RT30xx
+-//2008/09/11:KH add to support efuse<--
+ UCHAR eFuseReadRegisters(
+ 	IN	PRTMP_ADAPTER	pAd,
+ 	IN	USHORT Offset,

@@ -1,0 +1,28 @@
+From 87cbcb673481be97b96cbbeba4aac654937bc335 Mon Sep 17 00:00:00 2001
+From: Axel K <rain_maker@root-forum.org>
+Date: Thu, 03 Sep 2009 18:47:11 +0000
+Subject: Staging: rt3090: add device id 1462:891a
+
+This patch adds a new device ID (1462:819a) to ralink rt3090 driver in linux
+staging. The device ID was retrieved from the latest vendor release (version
+2.2.0.0).
+
+Signed-off-by: Axel Koellhofer <rain_maker@root-forum.org>
+Acked-by: Bartlomiej Zolnierkiewicz <bzolnier@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@suse.de>
+
+---
+diff --git a/drivers/staging/rt3090/pci_main_dev.c b/drivers/staging/rt3090/pci_main_dev.c
+index 30753d5..4997d3a 100644
+--- a/drivers/staging/rt3090/pci_main_dev.c
++++ b/drivers/staging/rt3090/pci_main_dev.c
+@@ -83,6 +83,7 @@ static struct pci_device_id rt2860_pci_tbl[] __devinitdata =
+ 	{PCI_DEVICE(NIC_PCI_VENDOR_ID, NIC3090_PCIe_DEVICE_ID)},
+ 	{PCI_DEVICE(NIC_PCI_VENDOR_ID, NIC3091_PCIe_DEVICE_ID)},
+ 	{PCI_DEVICE(NIC_PCI_VENDOR_ID, NIC3092_PCIe_DEVICE_ID)},
++	{PCI_DEVICE(0x1462, 0x891A)},
+ #endif // RT3090 //
+ #ifdef RT3390
+ 	{PCI_DEVICE(NIC_PCI_VENDOR_ID, NIC3390_PCIe_DEVICE_ID)},
+--
+cgit v0.9.2
