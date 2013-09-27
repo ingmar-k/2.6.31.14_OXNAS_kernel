@@ -3,10 +3,12 @@
 
 2.6.31.14 kernel sources, patched for accept4-, devtmpfs-support. Fake 2.6.32 version number and certain other fixes to make it work with newer distros.
 
-This repository is based on the Medion/Zyxel sources, avaiable here:
-http://www.medion.com/de/service/_lightbox/software_details.php?did=12008&hgt=504
+<br>This repository is based on the Medion/Zyxel sources, avaiable here:
+[http://www.medion.com/de/service/_lightbox/software_details.php?did=12008&hgt=504](http://www.medion.com/de/service/_lightbox/software_details.php?did=12008&hgt=504)
 
-
+<p><b>I personally used the repository to create kernels for Pogoplug V3 devices. 
+<br>If you want to use it for other OXNAS based devices, you might need to apply some changes!</b>
+<p>
 - - - 
 
 	Linux kernel release 2.6.xx <http://kernel.org/>
